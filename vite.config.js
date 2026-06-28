@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+﻿import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['pwa-icon.svg', 'apple-touch-icon.svg'],
       manifest: {
-        name: 'After12th AI — NEET & JEE Prep',
+        name: 'After12th AI â€” NEET & JEE Prep',
         short_name: 'After12th AI',
-        description: 'Your free AI tutor for NEET & JEE — mock tests, rank predictor, college finder, voice tutor.',
+        description: 'Your free AI tutor for NEET & JEE â€” mock tests, rank predictor, college finder, voice tutor.',
         theme_color: '#8B5CF6',
         background_color: '#0B0F1F',
         display: 'standalone',
@@ -62,7 +62,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': { target: 'http://localhost:3001', changeOrigin: true },
+      '/api': { target: 'https://after12th-ai.onrender.com', changeOrigin: true },
     },
   },
   build: {
