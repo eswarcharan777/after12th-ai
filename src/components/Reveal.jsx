@@ -13,7 +13,7 @@ export default function Reveal({
   delay = 0,
   duration = 700,
   threshold = 0.15,
-  once = false,      // ← default: animate EVERY time element enters the viewport
+  once = true,       // ← default: animate ONCE on first view, then stay visible
   style,
   as: Tag = 'div',
 }) {
@@ -24,11 +24,16 @@ export default function Reveal({
     const el = ref.current;
     if (!el) return;
 
-    // If user prefers reduced motion, just show immediately
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // If user prefers reduced motion OR IntersectionObserver missing, just show
+    if (typeof IntersectionObserver === 'undefined' ||
+        (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
       setVisible(true);
       return;
     }
+
+    // Safety net: if observer never fires within 1.5s, force visible.
+    // Prevents content from staying invisible on flaky devices.
+    const safetyTimer = setTimeout(() => setVisible(true), 1500);
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -45,7 +50,7 @@ export default function Reveal({
       { threshold, rootMargin: '0px 0px -80px 0px' }
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => { io.disconnect(); clearTimeout(safetyTimer); };
   }, [threshold, once]);
 
   const initial = {

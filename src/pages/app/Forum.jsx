@@ -31,10 +31,12 @@ export default function Forum() {
 
   const inputStyle = { width: '100%', padding: '11px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: 10, fontSize: 14, color: 'var(--text)' };
 
+  const [permissionError, setPermissionError] = useState(false);
+
   const loadPosts = useCallback(async () => {
     setLoading(true);
+    setPermissionError(false);
     if (!isFirebaseConfigured || !db) {
-      // Demo fallback — show example posts
       setPosts([
         { id: 'demo1', title: 'How to remember NCERT diagrams better?', body: 'I keep forgetting the diagrams. Any tips?', subject: 'Biology', authorName: 'Demo Student', createdAt: { toDate: () => new Date(Date.now() - 3600000) }, answersCount: 3 },
         { id: 'demo2', title: 'JEE Main strategy for last 60 days', body: 'I have 60 days. PCM strategy please.', subject: 'Strategy', authorName: 'Aspirant', createdAt: { toDate: () => new Date(Date.now() - 86400000) }, answersCount: 5 },
@@ -48,6 +50,9 @@ export default function Forum() {
       setPosts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (e) {
       console.warn('Forum load failed:', e.message);
+      if (e.code === 'permission-denied' || /permission/i.test(e.message)) {
+        setPermissionError(true);
+      }
       setPosts([]);
     }
     setLoading(false);
@@ -245,6 +250,17 @@ export default function Forum() {
         <Reveal variant="up">
           <div className="glass" style={{ padding: 16, marginBottom: 16, borderColor: 'rgba(245,166,35,0.4)' }}>
             <span style={{ fontSize: 13, color: 'var(--gold)' }}>⚠️ Showing demo posts — Firebase not configured for forum.</span>
+          </div>
+        </Reveal>
+      )}
+
+      {permissionError && (
+        <Reveal variant="up">
+          <div className="glass" style={{ padding: 18, marginBottom: 16, borderColor: 'rgba(236,72,153,0.5)' }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--pink-2)', marginBottom: 6 }}>🔒 Forum needs Firestore rules update</div>
+            <div style={{ fontSize: 12, color: 'var(--text-dim)', lineHeight: 1.6 }}>
+              The Firestore rules don't allow forum reads/writes yet. Go to <strong>Firebase Console → Firestore → Rules</strong> and publish the updated rules that include the <code>forum_posts</code> collection. (Ask Claude for the rules.)
+            </div>
           </div>
         </Reveal>
       )}
