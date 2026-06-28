@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Top Colleges in India — IITs, NITs, AIIMS | After12th AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="site.css"/>
+<style>
+.col-card{background:#fff;border-radius:14px;padding:20px;border:1px solid var(--border);transition:all .22s;cursor:default}
+.col-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.1)}
+.col-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.cs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cs-b{background:var(--offwhite);border-radius:8px;padding:9px;text-align:center}
+.cs-v{font-family:'Sora',sans-serif;font-weight:800;font-size:16px}
+.cs-l{font-size:10px;color:var(--gray);margin-top:2px}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;border-radius:14px;padding:18px 20px;border:1px solid var(--border);margin-bottom:22px;box-shadow:var(--shadow)}
+.filter-row input,.filter-row select{padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;color:var(--navy);background:#fff;outline:none}
+.tab-btn{padding:8px 20px;border-radius:20px;border:2px solid var(--border);background:#fff;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s}
+.tab-btn.on{background:var(--saffron);color:#fff;border-color:var(--saffron)}
+</style>
+</head>
+<body>
+<div class="tri"></div>
+<header><div class="container"><nav class="nav">
+  <a href="index.html" class="logo"><div class="logo-ic">🎓</div>After12th <em>AI</em></a>
+  <div class="nav-links"><a href="index.html">Home</a><a href="neet.html">NEET</a><a href="jee.html">JEE</a><a href="colleges.html" class="active">Colleges</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="http://localhost:3001/login" class="nav-btn">Start Free →</a></div>
+  <button class="hamburger" onclick="document.getElementById('mob').classList.toggle('open')">☰</button>
+</nav></div>
+<div class="mob" id="mob"><a href="index.html">Home</a><a href="neet.html">NEET</a><a href="jee.html">JEE</a><a href="colleges.html">Colleges</a><a href="pricing.html">Pricing</a><a href="about.html">About</a><a href="http://localhost:3001/login" class="nav-btn">Start Free →</a></div>
+</header>
+
+<section class="page-hero" style="background:linear-gradient(135deg,#0A1628 0%,#162d55 100%)">
+  <div class="container">
+    <div class="page-hero-tag" style="background:rgba(255,255,255,.12);color:#fff">🏫 College Directory</div>
+    <h1>Find Your Dream College</h1>
+    <p>Browse 25+ top colleges — IITs, NITs, AIIMS, Government Medical colleges and more. Compare cutoffs, fees, NIRF ranks and branches side by side.</p>
+    <div class="page-hero-btns">
+      <a href="http://localhost:3001/login" class="phbtn phbtn-white" style="color:var(--navy)">AI College Shortlisting</a>
+      <a href="http://localhost:3001/login" class="phbtn phbtn-ghost">Predict My Rank →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--offwhite);padding-top:40px">
+<div class="container">
+
+<!-- FILTER -->
+<div class="filter-row">
+  <input id="search" placeholder="🔍 Search college or city or state..." oninput="render()" style="flex:1;min-width:200px"/>
+  <select id="typeF" onchange="render()"><option value="">All Types</option><option>IIT</option><option>NIT</option><option>IIIT</option><option>AIIMS</option><option>Govt Medical</option><option>Private</option></select>
+  <select id="examF" onchange="render()"><option value="">All Exams</option><option value="JEE_ADV">JEE Advanced</option><option value="JEE_MAIN">JEE Main</option><option value="NEET">NEET</option></select>
+  <span id="cnt" style="color:var(--gray);font-size:13px;white-space:nowrap;margin-left:auto"></span>
+</div>
+
+<!-- TYPE TABS -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+  <button class="tab-btn on" onclick="setTab(this,'')">All</button>
+  <button class="tab-btn" onclick="setTab(this,'IIT')">🏆 IITs</button>
+  <button class="tab-btn" onclick="setTab(this,'NIT')">⚙️ NITs</button>
+  <button class="tab-btn" onclick="setTab(this,'IIIT')">💻 IIITs</button>
+  <button class="tab-btn" onclick="setTab(this,'AIIMS')">🩺 AIIMS</button>
+  <button class="tab-btn" onclick="setTab(this,'Govt Medical')">🏥 Govt Medical</button>
+  <button class="tab-btn" onclick="setTab(this,'Private')">🏢 Private</button>
+</div>
+
+<div class="col-grid" id="grid"></div>
+
+<!-- DISCLAIMER -->
+<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:14px 18px;margin-top:24px;font-size:13px;color:#92400E">
+  ⚠️ <strong>Disclaimer:</strong> Cutoff ranks shown are from 2024 JoSAA/NEET counselling data. Actual cutoffs change every year based on number of candidates and exam difficulty. Always verify current year cutoffs from official <strong>josaa.nic.in</strong> or <strong>mcc.nic.in</strong> before making decisions.
+</div>
+
+</div>
+</section>
+
+<!-- AI SHORTLIST CTA -->
+<section style="background:linear-gradient(135deg,var(--saffron),#FF8C33);padding:64px 0;text-align:center;color:#fff">
+  <div class="container">
+    <h2 style="font-family:'Sora';font-size:clamp(22px,4vw,38px);font-weight:800;margin-bottom:12px">Want personalised college recommendations? 🤖</h2>
+    <p style="font-size:17px;opacity:.92;margin-bottom:28px;max-width:520px;margin-left:auto;margin-right:auto">Take a mock test → get your predicted rank → AI shortlists the best colleges and branches for you.</p>
+    <a href="http://localhost:3001/login" style="background:#fff;color:var(--saffron);padding:14px 32px;border-radius:10px;font-family:'Sora';font-weight:700;font-size:16px;display:inline-block">Get AI College Shortlist →</a>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div class="footer-grid">
+    <div><div class="f-logo">🎓 After12th <em>AI</em></div><p class="f-desc">AI-powered NEET & JEE prep for Indian students.</p></div>
+    <div><div class="f-head">Exams</div><div class="f-links"><a href="neet.html">NEET Prep</a><a href="jee.html">JEE Main</a><a href="jee.html">JEE Advanced</a></div></div>
+    <div><div class="f-head">Platform</div><div class="f-links"><a href="http://localhost:3001/login">AI Tutor</a><a href="http://localhost:3001/login">Mock Tests</a><a href="http://localhost:3001/login">Rank Predictor</a></div></div>
+    <div><div class="f-head">Company</div><div class="f-links"><a href="about.html">About</a><a href="pricing.html">Pricing</a><a href="about.html#contact">Contact</a></div></div>
+  </div>
+  <div class="tri" style="margin-bottom:20px"></div>
+  <div class="f-bottom"><div class="f-copy">© 2026 After12th AI</div><div class="f-copy">Powered by Claude AI</div></div>
+</div></footer>
+
+<script>
+const DATA=[
+  {name:'IIT Bombay',type:'IIT',exam:'JEE_ADV',city:'Mumbai',state:'Maharashtra',nirf:3,fees:230000,co:{Gen:67,OBC:198,SC:485,ST:320}},
+  {name:'IIT Delhi',type:'IIT',exam:'JEE_ADV',city:'New Delhi',state:'Delhi',nirf:2,fees:210000,co:{Gen:54,OBC:163,SC:412,ST:248}},
+  {name:'IIT Madras',type:'IIT',exam:'JEE_ADV',city:'Chennai',state:'Tamil Nadu',nirf:1,fees:220000,co:{Gen:89,OBC:267,SC:620,ST:410}},
+  {name:'IIT Kanpur',type:'IIT',exam:'JEE_ADV',city:'Kanpur',state:'Uttar Pradesh',nirf:4,fees:215000,co:{Gen:163,OBC:480,SC:890,ST:612}},
+  {name:'IIT Kharagpur',type:'IIT',exam:'JEE_ADV',city:'Kharagpur',state:'West Bengal',nirf:5,fees:190000,co:{Gen:245,OBC:712,SC:1250,ST:890}},
+  {name:'IIT Roorkee',type:'IIT',exam:'JEE_ADV',city:'Roorkee',state:'Uttarakhand',nirf:7,fees:210000,co:{Gen:412,OBC:1100,SC:1890,ST:1340}},
+  {name:'IIT Guwahati',type:'IIT',exam:'JEE_ADV',city:'Guwahati',state:'Assam',nirf:8,fees:180000,co:{Gen:720,OBC:1890,SC:2800,ST:1950}},
+  {name:'IIT Hyderabad',type:'IIT',exam:'JEE_ADV',city:'Hyderabad',state:'Telangana',nirf:9,fees:195000,co:{Gen:850,OBC:2100,SC:3200,ST:2400}},
+  {name:'NIT Trichy',type:'NIT',exam:'JEE_MAIN',city:'Tiruchirappalli',state:'Tamil Nadu',nirf:10,fees:145000,co:{Gen:3200,OBC:8900,SC:18000,ST:14000}},
+  {name:'NIT Warangal',type:'NIT',exam:'JEE_MAIN',city:'Warangal',state:'Telangana',nirf:26,fees:140000,co:{Gen:4500,OBC:12000,SC:22000,ST:17000}},
+  {name:'NIT Surathkal',type:'NIT',exam:'JEE_MAIN',city:'Surathkal',state:'Karnataka',nirf:18,fees:135000,co:{Gen:5200,OBC:14000,SC:25000,ST:20000}},
+  {name:'NIT Calicut',type:'NIT',exam:'JEE_MAIN',city:'Calicut',state:'Kerala',nirf:22,fees:130000,co:{Gen:5800,OBC:15500,SC:28000,ST:22000}},
+  {name:'NIT Allahabad',type:'NIT',exam:'JEE_MAIN',city:'Prayagraj',state:'Uttar Pradesh',nirf:30,fees:125000,co:{Gen:7200,OBC:19000,SC:33000,ST:28000}},
+  {name:'MNIT Jaipur',type:'NIT',exam:'JEE_MAIN',city:'Jaipur',state:'Rajasthan',nirf:38,fees:130000,co:{Gen:8500,OBC:22000,SC:38000,ST:32000}},
+  {name:'NIT Rourkela',type:'NIT',exam:'JEE_MAIN',city:'Rourkela',state:'Odisha',nirf:21,fees:120000,co:{Gen:9000,OBC:24000,SC:41000,ST:35000}},
+  {name:'IIIT Hyderabad',type:'IIIT',exam:'JEE_MAIN',city:'Hyderabad',state:'Telangana',nirf:43,fees:280000,co:{Gen:1800,OBC:5200,SC:10500,ST:8200}},
+  {name:'IIIT Allahabad',type:'IIIT',exam:'JEE_MAIN',city:'Prayagraj',state:'Uttar Pradesh',nirf:52,fees:180000,co:{Gen:3800,OBC:10500,SC:19500,ST:15500}},
+  {name:'AIIMS New Delhi',type:'AIIMS',exam:'NEET',city:'New Delhi',state:'Delhi',nirf:1,fees:1628,co:{Gen:50,OBC:150,SC:350,ST:200}},
+  {name:'AIIMS Jodhpur',type:'AIIMS',exam:'NEET',city:'Jodhpur',state:'Rajasthan',nirf:15,fees:1628,co:{Gen:350,OBC:800,SC:1800,ST:1200}},
+  {name:'AIIMS Bhopal',type:'AIIMS',exam:'NEET',city:'Bhopal',state:'Madhya Pradesh',nirf:18,fees:1628,co:{Gen:420,OBC:950,SC:2100,ST:1450}},
+  {name:'AIIMS Rishikesh',type:'AIIMS',exam:'NEET',city:'Rishikesh',state:'Uttarakhand',nirf:12,fees:1628,co:{Gen:380,OBC:870,SC:1950,ST:1350}},
+  {name:'Maulana Azad Medical College',type:'Govt Medical',exam:'NEET',city:'New Delhi',state:'Delhi',nirf:3,fees:12000,co:{Gen:180,OBC:450,SC:980,ST:680}},
+  {name:'Grant Medical College',type:'Govt Medical',exam:'NEET',city:'Mumbai',state:'Maharashtra',nirf:7,fees:25000,co:{Gen:850,OBC:2100,SC:4500,ST:3200}},
+  {name:'Osmania Medical College',type:'Govt Medical',exam:'NEET',city:'Hyderabad',state:'Telangana',nirf:11,fees:18000,co:{Gen:1200,OBC:3000,SC:6500,ST:4800}},
+  {name:'BITS Pilani',type:'Private',exam:'JEE_MAIN',city:'Pilani',state:'Rajasthan',nirf:27,fees:550000,co:{Gen:2800,OBC:7200,SC:14000,ST:11000}},
+  {name:'VIT Vellore',type:'Private',exam:'JEE_MAIN',city:'Vellore',state:'Tamil Nadu',nirf:11,fees:380000,co:{Gen:25000,OBC:65000,SC:110000,ST:85000}},
+  {name:'Manipal Institute of Technology',type:'Private',exam:'JEE_MAIN',city:'Manipal',state:'Karnataka',nirf:20,fees:420000,co:{Gen:35000,OBC:90000,SC:150000,ST:120000}},
+];
+const TC={IIT:'#FF6B00',NIT:'#6366F1',IIIT:'#14B8A6',AIIMS:'#EF4444','Govt Medical':'#138808',Private:'#F5A623'};
+let activeTab='';
+
+function setTab(btn,t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  activeTab=t;
+  document.getElementById('typeF').value=t;
+  render();
+}
+function render(){
+  const s=document.getElementById('search').value.toLowerCase();
+  const t=document.getElementById('typeF').value;
+  const e=document.getElementById('examF').value;
+  const f=DATA.filter(c=>
+    (!s||c.name.toLowerCase().includes(s)||c.city.toLowerCase().includes(s)||c.state.toLowerCase().includes(s))&&
+    (!t||c.type===t)&&(!e||c.exam===e)
+  ).sort((a,b)=>a.nirf-b.nirf);
+  document.getElementById('cnt').textContent=`Showing ${f.length} colleges`;
+  document.getElementById('grid').innerHTML=f.map(c=>`
+  <div class="col-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div><div style="font-family:'Sora';font-weight:700;font-size:15px;margin-bottom:3px">${c.name}</div><div style="font-size:12px;color:var(--gray)">📍 ${c.city}, ${c.state}</div></div>
+      <span style="background:${TC[c.type]||'#6B7280'}18;color:${TC[c.type]||'#6B7280'};padding:3px 9px;border-radius:7px;font-size:11px;font-weight:700;flex-shrink:0">${c.type}</span>
+    </div>
+    <div class="cs" style="margin-bottom:12px">
+      <div class="cs-b"><div class="cs-v" style="color:var(--saffron)">#${c.nirf}</div><div class="cs-l">NIRF Rank</div></div>
+      <div class="cs-b"><div class="cs-v" style="color:var(--navy)">₹${c.fees>=100000?(c.fees/100000).toFixed(1)+'L':(c.fees/1000).toFixed(0)+'K'}</div><div class="cs-l">Fees/Year</div></div>
+      <div class="cs-b"><div class="cs-v" style="color:var(--green)">${c.co.Gen}</div><div class="cs-l">Gen Cutoff</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:12px">OBC: <strong>${c.co.OBC}</strong> &nbsp;|&nbsp; SC: <strong>${c.co.SC}</strong> &nbsp;|&nbsp; ST: <strong>${c.co.ST}</strong></div>
+    <div style="font-size:11px;color:var(--gray);margin-bottom:12px">Exam: <span style="font-weight:600;color:var(--navy)">${c.exam.replace('_',' ')}</span></div>
+    <a href="http://localhost:3001/login" style="display:block;text-align:center;background:${TC[c.type]||'var(--saffron)'};color:#fff;padding:9px;border-radius:8px;font-weight:700;font-size:13px;font-family:'Sora'">Check My Eligibility →</a>
+  </div>`).join('');
+}
+render();
+</script>
+</body></html>
