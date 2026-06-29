@@ -4,6 +4,7 @@ import { loadUserData, getLocalScores } from '../../userdata';
 import Reveal from '../../components/Reveal';
 import AnimatedNumber from '../../components/AnimatedNumber';
 import ExamCountdown from '../../components/ExamCountdown';
+import Achievements from '../../components/Achievements';
 
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem('after12th_user') || '{}');
@@ -24,6 +25,8 @@ export default function Dashboard() {
   const quickLinks = [
     { to: '/app/tutor', icon: '🤖', label: 'Ask AI Tutor', desc: 'Clear any doubt instantly', color: '#8B5CF6' },
     { to: '/app/mocktest', icon: '📝', label: 'Take Mock Test', desc: 'Practice NTA-pattern questions', color: '#EC4899' },
+    { to: '/app/flashcards', icon: '📚', label: 'Flashcards', desc: 'Quick revision card flips', color: '#F5A623' },
+    { to: '/app/pomodoro', icon: '🍅', label: 'Focus Timer', desc: '25 min deep work sessions', color: '#EF4444' },
     { to: '/app/rank', icon: '📈', label: 'Predict My Rank', desc: 'Know where you stand', color: '#10B981' },
     { to: '/app/colleges', icon: '🏫', label: 'Find Colleges', desc: 'Shortlist best colleges', color: '#06B6D4' },
     { to: '/app/branch', icon: '🧭', label: 'Branch Guide', desc: 'CSE vs MBBS — get AI advice', color: '#F472B6' },
@@ -130,6 +133,13 @@ export default function Dashboard() {
           </Reveal>
         ))}
       </div>
+
+      {/* Achievements */}
+      <Reveal variant="up">
+        <div className="glass" style={{ padding: 26, marginBottom: 24, borderRadius: 16 }}>
+          <Achievements />
+        </div>
+      </Reveal>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
         {/* Recent Mock Tests */}

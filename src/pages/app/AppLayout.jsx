@@ -6,6 +6,8 @@ const nav = [
   { to: '/app/dashboard', icon: '📊', label: 'Dashboard' },
   { to: '/app/tutor', icon: '🤖', label: 'AI Tutor' },
   { to: '/app/mocktest', icon: '📝', label: 'Mock Test' },
+  { to: '/app/flashcards', icon: '📚', label: 'Flashcards' },
+  { to: '/app/pomodoro', icon: '🍅', label: 'Focus Timer' },
   { to: '/app/videos', icon: '🎬', label: 'Video Lessons' },
   { to: '/app/forum', icon: '👥', label: 'Doubt Forum' },
   { to: '/app/rank', icon: '📈', label: 'Rank Predictor' },

@@ -21,6 +21,8 @@ import BranchGuide from './pages/app/BranchGuide';
 import StudyPlanner from './pages/app/StudyPlanner';
 import Forum from './pages/app/Forum';
 import Videos from './pages/app/Videos';
+import Pomodoro from './pages/app/Pomodoro';
+import Flashcards from './pages/app/Flashcards';
 
 function PublicLayout({ children }) {
   return (
@@ -59,6 +61,8 @@ export default function App() {
         <Route path="planner" element={<StudyPlanner />} />
         <Route path="forum" element={<Forum />} />
         <Route path="videos" element={<Videos />} />
+        <Route path="pomodoro" element={<Pomodoro />} />
+        <Route path="flashcards" element={<Flashcards />} />
       </Route>
 
       {/* Catch-all */}
