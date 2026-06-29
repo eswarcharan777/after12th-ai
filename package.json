@@ -6,9 +6,9 @@
     "dev": "vite",
     "build": "vite build && node -e \"require('fs').copyFileSync('dist/app.html','dist/index.html')\"",
     "preview": "vite preview",
-    "server": "node server.cjs",
-    "start": "node server.cjs",
-    "dev:all": "concurrently \"node server.cjs\" \"vite\""
+    "server": "node backend/server.cjs",
+    "start": "node backend/server.cjs",
+    "dev:all": "concurrently \"node backend/server.cjs\" \"vite\""
   },
   "dependencies": {
     "@react-three/drei": "^9.114.3",
