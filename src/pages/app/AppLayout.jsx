@@ -5,15 +5,20 @@ import { auth, isFirebaseConfigured, signOut } from '../../firebase';
 const nav = [
   { to: '/app/dashboard', icon: '📊', label: 'Dashboard' },
   { to: '/app/tutor', icon: '🤖', label: 'AI Tutor' },
+  { to: '/app/quiz', icon: '🎲', label: 'Daily Quiz' },
   { to: '/app/mocktest', icon: '📝', label: 'Mock Test' },
   { to: '/app/flashcards', icon: '📚', label: 'Flashcards' },
   { to: '/app/pomodoro', icon: '🍅', label: 'Focus Timer' },
+  { to: '/app/music', icon: '🎵', label: 'Focus Music' },
+  { to: '/app/notes', icon: '📝', label: 'Notes' },
+  { to: '/app/formulas', icon: '📐', label: 'Formulas' },
   { to: '/app/videos', icon: '🎬', label: 'Video Lessons' },
   { to: '/app/forum', icon: '👥', label: 'Doubt Forum' },
   { to: '/app/rank', icon: '📈', label: 'Rank Predictor' },
   { to: '/app/colleges', icon: '🏫', label: 'College Finder' },
   { to: '/app/branch', icon: '🧭', label: 'Branch Guide' },
   { to: '/app/planner', icon: '📅', label: 'Study Planner' },
+  { to: '/app/refer', icon: '🤝', label: 'Refer Friends' },
 ];
 
 export default function AppLayout() {

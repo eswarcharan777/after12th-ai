@@ -101,13 +101,30 @@ export default function Videos() {
                   <span className="badge" style={{ fontSize: 10, color: 'var(--text-dim)' }}>{v.chapter}</span>
                 </div>
                 <h3 style={{ fontFamily: 'Sora', fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 8, lineHeight: 1.4 }}>{v.title}</h3>
-                <div style={{ fontSize: 12, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>👤</span> {v.creator}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>👤</span> {v.creator}
+                  </div>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${v.videoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ fontSize: 11, color: 'var(--text-faint)', textDecoration: 'underline' }}
+                    title="Open on YouTube to support the creator"
+                  >Watch on YouTube ↗</a>
                 </div>
               </div>
             </div>
           </Reveal>
         ))}
+      </div>
+
+      {/* Footer disclaimer for legal safety */}
+      <div className="glass" style={{ padding: 18, marginTop: 26, borderRadius: 12, fontSize: 12, color: 'var(--text-dim)', textAlign: 'center', lineHeight: 1.6 }}>
+        📺 All videos are <strong>embedded via YouTube's standard player</strong>. We don't host, copy, or modify any video — all credit, views, and ad revenue go to the original creators.
+        <br />
+        Please support educators by clicking <strong>"Watch on YouTube"</strong> to subscribe to their channels.
       </div>
     </div>
   );

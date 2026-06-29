@@ -5,6 +5,8 @@ import Reveal from '../../components/Reveal';
 import AnimatedNumber from '../../components/AnimatedNumber';
 import ExamCountdown from '../../components/ExamCountdown';
 import Achievements from '../../components/Achievements';
+import Streak from '../../components/Streak';
+import StudyCalendar from '../../components/StudyCalendar';
 
 export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem('after12th_user') || '{}');
@@ -133,6 +135,13 @@ export default function Dashboard() {
           </Reveal>
         ))}
       </div>
+
+      {/* Study Calendar */}
+      <Reveal variant="up">
+        <div className="glass" style={{ padding: 26, marginBottom: 24, borderRadius: 16 }}>
+          <StudyCalendar />
+        </div>
+      </Reveal>
 
       {/* Achievements */}
       <Reveal variant="up">

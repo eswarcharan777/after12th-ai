@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LanguageToggle } from '../i18n';
 
 const S = {
   nav: {
@@ -111,6 +112,7 @@ export default function Navbar() {
                   {l.label}
                 </Link>
               ))}
+              <LanguageToggle style={{ marginLeft: 4 }} />
               {isLoggedIn ? (
                 <>
                   {!isApp && <Link to="/app/dashboard" style={S.cta}>Dashboard</Link>}

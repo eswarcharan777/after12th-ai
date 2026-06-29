@@ -23,6 +23,12 @@ import Forum from './pages/app/Forum';
 import Videos from './pages/app/Videos';
 import Pomodoro from './pages/app/Pomodoro';
 import Flashcards from './pages/app/Flashcards';
+import DailyQuiz from './pages/app/DailyQuiz';
+import Notes from './pages/app/Notes';
+import Formulas from './pages/app/Formulas';
+import FocusMusic from './pages/app/FocusMusic';
+import Refer from './pages/app/Refer';
+import { I18nProvider } from './i18n';
 
 function PublicLayout({ children }) {
   return (
@@ -36,7 +42,7 @@ function PublicLayout({ children }) {
 
 export default function App() {
   return (
-    <>
+    <I18nProvider>
     <ScrollProgress />
     <InstallPrompt />
     <Routes>
@@ -63,11 +69,16 @@ export default function App() {
         <Route path="videos" element={<Videos />} />
         <Route path="pomodoro" element={<Pomodoro />} />
         <Route path="flashcards" element={<Flashcards />} />
+        <Route path="quiz" element={<DailyQuiz />} />
+        <Route path="notes" element={<Notes />} />
+        <Route path="formulas" element={<Formulas />} />
+        <Route path="music" element={<FocusMusic />} />
+        <Route path="refer" element={<Refer />} />
       </Route>
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    </>
+    </I18nProvider>
   );
 }
