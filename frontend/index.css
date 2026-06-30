@@ -243,6 +243,18 @@ input, textarea, select {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Subtle pulse re-animation when a Reveal element re-enters the viewport.
+   Triggered AFTER the first full reveal — never makes the element invisible,
+   so buttons / forms / links remain clickable throughout. */
+@keyframes reveal-pulse {
+  0%   { filter: brightness(1); }
+  35%  { transform: scale(1.02) translate3d(0, -3px, 0); filter: brightness(1.12); }
+  100% { filter: brightness(1); }
+}
+.reveal-pulse {
+  animation: reveal-pulse 0.7s cubic-bezier(.22, 1, .36, 1);
+}
+
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 30px rgba(139,92,246,0.35); }
   50%      { box-shadow: 0 0 50px rgba(236,72,153,0.45); }
