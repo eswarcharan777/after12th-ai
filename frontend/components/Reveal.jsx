@@ -4,9 +4,10 @@ import React, { useEffect, useRef, useState } from 'react';
  * Scroll-triggered reveal wrapper.
  *
  * Behavior:
- * - First time element enters viewport → DRAMATIC reveal (fade + slide + scale).
- * - Every subsequent time it enters viewport → noticeable pulse + glow.
- * - Content NEVER becomes invisible after first reveal (buttons stay clickable).
+ * - First time element enters viewport → dramatic reveal (fade + slide + scale).
+ * - Marks itself with `data-scroll-pulse` so the global ScrollPulse
+ *   manager re-animates it on every scroll while visible.
+ * - Content NEVER becomes invisible after first reveal — buttons stay clickable.
  *
  * Variants: 'up' | 'left' | 'right' | 'scale' | 'fade'
  */
@@ -16,13 +17,12 @@ export default function Reveal({
   delay = 0,
   duration = 800,
   threshold = 0.1,
-  once = true, // kept for back-compat; new behavior pulses on re-entry without hiding
+  once = true, // kept for back-compat; behavior is fixed (always visible once revealed)
   style,
   as: Tag = 'div',
 }) {
   const ref = useRef(null);
   const [hasEntered, setHasEntered] = useState(false);
-  const seenBeforeRef = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -44,13 +44,7 @@ export default function Reveal({
         entries.forEach((e) => {
           if (e.isIntersecting) {
             setHasEntered(true);
-            // On re-entry: trigger pulse animation
-            if (seenBeforeRef.current) {
-              el.classList.remove('a12-pulse');
-              void el.offsetWidth; // force reflow
-              el.classList.add('a12-pulse');
-            }
-            seenBeforeRef.current = true;
+            io.unobserve(el);
           }
         });
       },
@@ -77,6 +71,7 @@ export default function Reveal({
   return (
     <Tag
       ref={ref}
+      data-scroll-pulse={hasEntered ? '' : undefined}
       style={{
         ...(hasEntered ? shown : initial),
         transition: `opacity ${duration}ms cubic-bezier(.22,1,.36,1) ${delay}ms, transform ${duration}ms cubic-bezier(.22,1,.36,1) ${delay}ms`,
@@ -85,16 +80,6 @@ export default function Reveal({
       }}
     >
       {children}
-      {/* Inline keyframes so this works even if global CSS hasn't loaded yet */}
-      <style>{`
-        @keyframes a12-pulse {
-          0%   { transform: translate3d(0,0,0) scale(1); filter: brightness(1); }
-          30%  { transform: translate3d(0,-8px,0) scale(1.035); filter: brightness(1.18) drop-shadow(0 8px 24px rgba(139,92,246,0.45)); }
-          60%  { transform: translate3d(0,-2px,0) scale(1.015); filter: brightness(1.08); }
-          100% { transform: translate3d(0,0,0) scale(1); filter: brightness(1); }
-        }
-        .a12-pulse { animation: a12-pulse 0.85s cubic-bezier(.22,1,.36,1); }
-      `}</style>
     </Tag>
   );
 }

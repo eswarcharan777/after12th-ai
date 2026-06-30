@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollProgress from './components/ScrollProgress';
+import ScrollPulse from './components/ScrollPulse';
 import InstallPrompt from './components/InstallPrompt';
 import Home from './pages/Home';
 import NEETPrep from './pages/NEETPrep';
@@ -44,6 +45,7 @@ export default function App() {
   return (
     <I18nProvider>
     <ScrollProgress />
+    <ScrollPulse />
     <InstallPrompt />
     <Routes>
       {/* Public routes */}
