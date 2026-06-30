@@ -245,15 +245,27 @@ input, textarea, select {
 
 /* ── Global scroll pulse ───────────────────────────────────────────
    Fires on every scroll movement to make the whole site feel alive.
-   Uses ONLY filter (no transform) so it doesn't fight inline styles
-   on Reveal-wrapped elements. */
+   Uses filter + box-shadow only (no transform) so it doesn't fight
+   inline styles on Reveal-wrapped elements. */
 @keyframes a12-scroll-pulse {
-  0%   { filter: brightness(1) saturate(1); }
-  50%  { filter: brightness(1.18) saturate(1.15) drop-shadow(0 6px 22px rgba(139, 92, 246, 0.35)); }
-  100% { filter: brightness(1) saturate(1); }
+  0% {
+    filter: brightness(1) saturate(1);
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
+  45% {
+    filter: brightness(1.25) saturate(1.35);
+    box-shadow:
+      0 0 40px 4px rgba(139, 92, 246, 0.45),
+      0 0 80px 8px rgba(236, 72, 153, 0.22),
+      0 0 0 1px rgba(139, 92, 246, 0.45);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
 }
 .a12-scroll-pulse {
-  animation: a12-scroll-pulse 0.5s cubic-bezier(.22, 1, .36, 1);
+  animation: a12-scroll-pulse 0.6s cubic-bezier(.22, 1, .36, 1);
 }
 
 @keyframes pulse-glow {
