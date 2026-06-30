@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import Reveal from '../../components/Reveal';
 
+// Evergreen YouTube videos (not live streams — won't expire)
 const STATIONS = [
-  { id: 'lofi',     name: 'Lofi Beats',        desc: 'Chill beats to relax/study to', videoId: 'jfKfPfyJRdk', emoji: '🎧', color: '#EC4899' },
-  { id: 'lofi2',    name: 'Lofi Hip Hop',      desc: 'Beats to focus / study',         videoId: '4xDzrJKXOOY', emoji: '☕', color: '#8B5CF6' },
-  { id: 'rain',     name: 'Rain & Thunder',    desc: 'Heavy rain sounds for focus',    videoId: 'mPZkdNFkNps', emoji: '🌧️', color: '#06B6D4' },
-  { id: 'forest',   name: 'Forest Ambience',   desc: 'Birds + leaves + calm',          videoId: 'd0tU18Ybcvk', emoji: '🌲', color: '#10B981' },
-  { id: 'piano',    name: 'Calm Piano',        desc: 'Beautiful instrumental piano',   videoId: '4oStw0r33so', emoji: '🎹', color: '#F5A623' },
-  { id: 'classical',name: 'Classical Focus',   desc: 'Mozart, Bach for deep work',     videoId: 'jgpJVI3tDbY', emoji: '🎻', color: '#A78BFA' },
-  { id: 'binaural', name: 'Binaural Beats',    desc: 'Brain waves for concentration',  videoId: 'iEjsdF7gMTw', emoji: '🧠', color: '#06B6D4' },
-  { id: 'cafe',     name: 'Cafe Ambience',     desc: 'Coffee shop background sounds',  videoId: 'h2zkV-l_TbY', emoji: '☕', color: '#F5A623' },
+  { id: 'lofi',      name: 'Lofi Hip Hop',      desc: '1 hour lofi for studying',          videoId: 'n61ULEU7CO0', emoji: '🎧', color: '#EC4899' },
+  { id: 'lofi2',     name: 'Chill Lofi Mix',    desc: 'Deep focus beats',                  videoId: 'lTRiuFIWV54', emoji: '☕', color: '#8B5CF6' },
+  { id: 'rain',      name: 'Rain Sounds',       desc: '10 hours of relaxing rain',         videoId: 'q76bMs-NwRk', emoji: '🌧️', color: '#06B6D4' },
+  { id: 'forest',    name: 'Forest Birds',      desc: 'Peaceful forest ambience',          videoId: 'xNN7iTA57jM', emoji: '🌲', color: '#10B981' },
+  { id: 'piano',     name: 'Calm Piano',        desc: 'Beautiful instrumental piano',      videoId: '4oStw0r33so', emoji: '🎹', color: '#F5A623' },
+  { id: 'classical', name: 'Classical Focus',   desc: 'Mozart, Beethoven for deep work',   videoId: 'BMuknRb7woc', emoji: '🎻', color: '#A78BFA' },
+  { id: 'binaural',  name: 'Brain Focus Beats', desc: '40Hz binaural for concentration',   videoId: 'WPni755-Krg', emoji: '🧠', color: '#06B6D4' },
+  { id: 'cafe',      name: 'Cafe Ambience',     desc: 'Coffee shop sounds (2 hours)',      videoId: 'BOdLmxy06H0', emoji: '☕', color: '#F5A623' },
+  { id: 'ocean',     name: 'Ocean Waves',       desc: 'Calming sea waves',                 videoId: 'V1bFr2SWP1I', emoji: '🌊', color: '#06B6D4' },
+  { id: 'fireplace', name: 'Fireplace',         desc: 'Crackling fire sounds',             videoId: 'L_LUpnjgPso', emoji: '🔥', color: '#EF4444' },
 ];
 
 export default function FocusMusic() {
@@ -50,6 +53,16 @@ export default function FocusMusic() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 10 }}>
+              <a
+                href={`https://www.youtube.com/watch?v=${active.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 12, color: 'var(--text-faint)', textDecoration: 'underline' }}
+              >
+                Video not loading? Open on YouTube ↗
+              </a>
             </div>
           </div>
         </div>
