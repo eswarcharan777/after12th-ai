@@ -7,7 +7,7 @@ import {
 } from '../firebase';
 
 export default function Login() {
-  const [tab, setTab] = useState('login');
+  const [tab, setTab] = useState('signup');
   const [form, setForm] = useState({ name: '', email: '', exam: 'NEET', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -68,15 +68,21 @@ export default function Login() {
       navigate('/app/dashboard');
     } catch (err) {
       const map = {
-        'auth/invalid-credential': 'Wrong email or password.',
-        'auth/user-not-found': 'No account found with this email. Try signing up.',
+        'auth/invalid-credential': 'No account with this email/password. Please Sign Up first.',
+        'auth/user-not-found': 'This email is not registered. Please Sign Up first.',
         'auth/wrong-password': 'Wrong password.',
-        'auth/email-already-in-use': 'Email already registered. Try logging in.',
+        'auth/email-already-in-use': 'Email already registered. Switch to Login.',
         'auth/weak-password': 'Password too weak (min 6 characters).',
         'auth/invalid-email': 'Enter a valid email address.',
         'auth/network-request-failed': 'Network error. Check your internet.',
       };
       setError(map[err.code] || err.message || 'Something went wrong. Try again.');
+      // Auto-flip the tab so users act on the guidance instead of retrying.
+      if (tab === 'login' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential')) {
+        setTab('signup');
+      } else if (tab === 'signup' && err.code === 'auth/email-already-in-use') {
+        setTab('login');
+      }
     } finally {
       setLoading(false);
     }
@@ -139,8 +145,8 @@ export default function Login() {
         )}
 
         <div style={S.tabs}>
-          <button style={S.tab(tab === 'login')} onClick={() => setTab('login')}>Login</button>
           <button style={S.tab(tab === 'signup')} onClick={() => setTab('signup')}>Sign Up Free</button>
+          <button style={S.tab(tab === 'login')} onClick={() => setTab('login')}>Login</button>
         </div>
 
         {error && <div style={S.error}>{error}</div>}

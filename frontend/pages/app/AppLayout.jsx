@@ -91,6 +91,7 @@ export default function AppLayout() {
   const user = useMemo(() => JSON.parse(localStorage.getItem('after12th_user') || '{}'), []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+  const [navQuery, setNavQuery] = useState('');
   const navScrollRef = useRef(null);
   const SCROLL_KEY = 'after12th_sidebar_scroll';
 
@@ -204,25 +205,58 @@ export default function AppLayout() {
           </div>
         </div>
 
+        <div style={{ padding: '12px 14px 6px' }}>
+          <div style={{ position: 'relative' }}>
+            <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--text-faint)', pointerEvents: 'none' }}>🔍</span>
+            <input
+              type="text"
+              value={navQuery}
+              onChange={e => setNavQuery(e.target.value)}
+              placeholder="Search features..."
+              aria-label="Search sidebar features"
+              style={{
+                width: '100%', padding: '9px 30px 9px 34px',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid var(--border)', borderRadius: 10,
+                color: 'var(--text)', fontSize: 13, outline: 'none',
+              }}
+            />
+            {navQuery && (
+              <button
+                onClick={() => setNavQuery('')}
+                aria-label="Clear search"
+                style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--text-faint)', cursor: 'pointer', fontSize: 16, padding: '2px 6px' }}
+              >×</button>
+            )}
+          </div>
+        </div>
+
         <nav
           ref={navScrollRef}
           onScroll={handleNavScroll}
           style={{ flex: 1, padding: '12px 0', overflowY: 'auto', contain: 'strict', willChange: 'scroll-position' }}
         >
-          {nav.map((n) => {
-            const active = location.pathname === n.to;
-            return (
-              <Link
-                key={n.to}
-                to={n.to}
-                className={`a12-nav-item${active ? ' active' : ''}`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <span style={{ fontSize: 18 }}>{n.icon}</span>
-                {n.label}
-              </Link>
-            );
-          })}
+          {(() => {
+            const q = navQuery.trim().toLowerCase();
+            const filtered = q ? nav.filter(n => n.label.toLowerCase().includes(q)) : nav;
+            if (filtered.length === 0) {
+              return <div style={{ padding: '18px 24px', fontSize: 13, color: 'var(--text-faint)' }}>No matches for "{navQuery}"</div>;
+            }
+            return filtered.map((n) => {
+              const active = location.pathname === n.to;
+              return (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  className={`a12-nav-item${active ? ' active' : ''}`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <span style={{ fontSize: 18 }}>{n.icon}</span>
+                  {n.label}
+                </Link>
+              );
+            });
+          })()}
         </nav>
 
         <div style={{ padding: '14px 22px', borderTop: '1px solid var(--border)' }}>

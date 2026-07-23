@@ -73,13 +73,13 @@ export default function MockTest() {
             <p style={{ color: 'var(--text-dim)', marginBottom: 28 }}>NTA-pattern tests with auto-scoring and performance analysis.</p>
           </Reveal>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 28 }}>
-            {Object.entries(EXAM_CONFIG).map(([exam, c], i) => {
-              const active = selectedExam === exam;
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 18, marginBottom: 28 }}>
+            {Object.entries(EXAM_CONFIG).filter(([exam]) => exam === selectedExam).map(([exam, c], i) => {
+              const active = true;
               return (
-                <Reveal key={exam} variant={i === 0 ? 'left' : 'right'} delay={i * 100}>
-                  <div onClick={() => setSelectedExam(exam)} className="glass" style={{
-                    padding: 24, cursor: 'pointer', borderRadius: 16,
+                <Reveal key={exam} variant="up" delay={i * 100}>
+                  <div className="glass" style={{
+                    padding: 24, borderRadius: 16,
                     border: `1px solid ${active ? 'var(--violet)' : 'var(--border)'}`,
                     boxShadow: active ? 'var(--glow-violet)' : 'none',
                     background: active ? 'rgba(139,92,246,0.10)' : 'var(--surface)',

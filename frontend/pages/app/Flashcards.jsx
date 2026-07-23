@@ -107,10 +107,10 @@ export default function Flashcards() {
       {/* Filters */}
       <Reveal variant="up" delay={50}>
         <div className="glass" style={{ padding: 16, marginBottom: 18, borderRadius: 14, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <select value={exam} onChange={e => { setExam(e.target.value); setSubject('ALL'); }} style={inputStyle}>
-            <option value="NEET" style={{ background: '#0F1530' }}>NEET</option>
-            <option value="JEE" style={{ background: '#0F1530' }}>JEE</option>
-          </select>
+          <div style={{ ...inputStyle, display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'default' }}>
+            <span style={{ fontSize: 12, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: 1 }}>Exam</span>
+            <span style={{ fontWeight: 700 }}>{exam}</span>
+          </div>
           <select value={subject} onChange={e => setSubject(e.target.value)} style={inputStyle}>
             <option value="ALL" style={{ background: '#0F1530' }}>All Subjects</option>
             {subjects.map(s => <option key={s} value={s} style={{ background: '#0F1530' }}>{s}</option>)}

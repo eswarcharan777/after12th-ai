@@ -92,10 +92,10 @@ export default function RankPredictor() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 20 }}>
             <div>
               <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: 'var(--text-mid)', marginBottom: 8 }}>Exam</label>
-              <select value={exam} onChange={e => { setExam(e.target.value); setResult(null); }} style={inputStyle}>
-                <option value="NEET" style={{ background: '#0F1530' }}>NEET-UG</option>
-                <option value="JEE" style={{ background: '#0F1530' }}>JEE Main</option>
-              </select>
+              <div style={{ ...inputStyle, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 18 }}>{exam === 'NEET' ? '🩺' : '⚙️'}</span>
+                <span style={{ fontWeight: 700 }}>{exam === 'NEET' ? 'NEET-UG' : 'JEE Main'}</span>
+              </div>
             </div>
             <div>
               <label style={{ display: 'block', fontWeight: 600, fontSize: 13, color: 'var(--text-mid)', marginBottom: 8 }}>Category</label>
