@@ -89,6 +89,7 @@ export default function Navbar() {
         { to: '/neet', label: 'NEET' },
         { to: '/jee', label: 'JEE' },
         { to: '/colleges-info', label: 'Colleges' },
+        { to: '/blog', label: 'Blog' },
         { to: '/pricing', label: 'Pricing' },
         { to: '/about', label: 'About' },
       ];
