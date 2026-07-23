@@ -73,7 +73,6 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem('after12th_user');
-    sessionStorage.removeItem('after12th_exam_asked_this_session');
     navigate('/');
   };
 

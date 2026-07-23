@@ -16,13 +16,26 @@ export default function Login() {
   const handle = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
   const saveLocalProfile = (user, extra = {}) => {
+    // Preserve any previously-locked exam choice for returning users.
+    let prev = {};
+    try { prev = JSON.parse(localStorage.getItem('after12th_user') || '{}'); } catch {}
+    const samePerson = prev.uid === user.uid;
     const profile = {
       uid: user.uid,
       name: user.displayName || extra.name || (user.email || '').split('@')[0],
       email: user.email,
-      exam: extra.exam || form.exam || 'NEET',
       photoURL: user.photoURL || null,
     };
+    if (extra.exam) {
+      // Explicit signup pick → lock it in.
+      profile.exam = extra.exam;
+      profile.examChosen = true;
+    } else if (samePerson && prev.examChosen) {
+      // Returning user on same device → keep their locked choice.
+      profile.exam = prev.exam;
+      profile.examChosen = true;
+    }
+    // Otherwise: leave exam/examChosen unset → ExamPicker will prompt (or hydrate from Firestore).
     localStorage.setItem('after12th_user', JSON.stringify(profile));
   };
 
@@ -88,7 +101,7 @@ export default function Login() {
   };
 
   const demoLogin = () => {
-    const profile = { uid: 'demo', name: 'Demo Student', email: 'demo@after12th.ai', exam: 'NEET', photoURL: null };
+    const profile = { uid: 'demo', name: 'Demo Student', email: 'demo@after12th.ai', photoURL: null };
     localStorage.setItem('after12th_user', JSON.stringify(profile));
     navigate('/app/dashboard');
   };

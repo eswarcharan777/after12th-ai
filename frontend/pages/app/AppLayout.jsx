@@ -212,7 +212,6 @@ export default function AppLayout() {
             onClick={async () => {
               try { if (isFirebaseConfigured && auth) await signOut(auth); } catch {}
               localStorage.removeItem('after12th_user');
-              sessionStorage.removeItem('after12th_exam_asked_this_session');
               navigate('/');
             }}
             style={{ ...S.navItem(false), padding: '10px 0', margin: 0, background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', color: 'var(--text-faint)', fontSize: 14 }}
