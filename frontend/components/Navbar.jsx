@@ -89,7 +89,7 @@ export default function Navbar() {
         { to: '/neet', label: 'NEET' },
         { to: '/jee', label: 'JEE' },
         { to: '/colleges-info', label: 'Colleges' },
-        { to: '/blog', label: 'Blog' },
+        { to: '/blog', label: 'Blog', external: true },
         { to: '/pricing', label: 'Pricing' },
         { to: '/about', label: 'About' },
       ];
@@ -105,7 +105,9 @@ export default function Navbar() {
 
           {!isMobile && (
             <div style={S.links}>
-              {navLinks.map(l => (
+              {navLinks.map(l => l.external ? (
+                <a key={l.to} href={l.to} style={S.link}>{l.label}</a>
+              ) : (
                 <Link
                   key={l.to} to={l.to}
                   style={{ ...S.link, ...(location.pathname === l.to ? S.activeLink : {}) }}
@@ -138,7 +140,11 @@ export default function Navbar() {
 
         {isMobile && menuOpen && (
           <div style={S.mobileMenu}>
-            {navLinks.map(l => (
+            {navLinks.map(l => l.external ? (
+              <a key={l.to} href={l.to} style={{ ...S.link, fontSize: 15, padding: '12px 14px' }} onClick={() => setMenuOpen(false)}>
+                {l.label}
+              </a>
+            ) : (
               <Link
                 key={l.to} to={l.to}
                 style={{ ...S.link, fontSize: 15, padding: '12px 14px' }}
