@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)",              "destination": "https://after12th-ai.onrender.com/api/$1" },
+    { "source": "/neet",                  "destination": "/neet.html" },
+    { "source": "/jee",                   "destination": "/jee.html" },
+    { "source": "/colleges-info",         "destination": "/colleges.html" },
+    { "source": "/about",                 "destination": "/about.html" },
+    { "source": "/pricing",               "destination": "/pricing.html" },
+    { "source": "/blog",                  "destination": "/blog.html" },
+    { "source": "/blog/(.*)",             "destination": "/blog/$1.html" },
+    { "source": "/free-neet-mock-test",   "destination": "/free-neet-mock-test.html" },
+    { "source": "/free-jee-mock-test",    "destination": "/free-jee-mock-test.html" },
+    { "source": "/neet-rank-predictor",   "destination": "/neet-rank-predictor.html" },
+    { "source": "/jee-rank-predictor",    "destination": "/jee-rank-predictor.html" },
+    { "source": "/((?!api|sitemap\\.xml|robots\\.txt|.*\\..*).*)", "destination": "/index.html" }
+  ]
+}
