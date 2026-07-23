@@ -47,10 +47,7 @@ export default function Molecule3D() {
             />
           ) : (
             <div style={{ color: '#333', fontSize: 13, textAlign: 'center', padding: 20 }}>
-              Image temporarily unavailable.<br />
-              <a href={`https://pubchem.ncbi.nlm.nih.gov/compound/${sel.cid}`} target="_blank" rel="noopener noreferrer" style={{ color: '#8B5CF6' }}>
-                Open on PubChem →
-              </a>
+              Image temporarily unavailable. Please try another molecule.
             </div>
           )}
         </div>
@@ -59,10 +56,6 @@ export default function Molecule3D() {
           <div style={{ fontFamily: 'Sora', fontWeight: 800, fontSize: 22, color: 'var(--text)' }}>{sel.name}</div>
           <div style={{ fontSize: 15, color: 'var(--violet-2)', fontFamily: 'monospace', marginTop: 4 }}>{sel.formula}</div>
           <div style={{ color: 'var(--text-dim)', marginTop: 12, lineHeight: 1.6 }}>{sel.desc}</div>
-          <a href={`https://pubchem.ncbi.nlm.nih.gov/compound/${sel.cid}`} target="_blank" rel="noopener noreferrer"
-             style={{ display: 'inline-block', marginTop: 14, color: 'var(--violet-2)', fontSize: 13, textDecoration: 'none' }}>
-            🔬 Open interactive 3D on PubChem →
-          </a>
         </div>
       </div>
     </div>

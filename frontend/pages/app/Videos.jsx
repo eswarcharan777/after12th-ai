@@ -105,14 +105,9 @@ export default function Videos() {
                   <div style={{ fontSize: 12, color: 'var(--text-dim)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span>👤</span> {v.creator}
                   </div>
-                  <a
-                    href={`https://www.youtube.com/watch?v=${v.videoId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ fontSize: 11, color: 'var(--text-faint)', textDecoration: 'underline' }}
-                    title="Open on YouTube to support the creator"
-                  >Watch on YouTube ↗</a>
+                  <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+                    ▶ Plays on this page
+                  </span>
                 </div>
               </div>
             </div>
@@ -122,9 +117,7 @@ export default function Videos() {
 
       {/* Footer disclaimer for legal safety */}
       <div className="glass" style={{ padding: 18, marginTop: 26, borderRadius: 12, fontSize: 12, color: 'var(--text-dim)', textAlign: 'center', lineHeight: 1.6 }}>
-        📺 All videos are <strong>embedded via YouTube's standard player</strong>. We don't host, copy, or modify any video — all credit, views, and ad revenue go to the original creators.
-        <br />
-        Please support educators by clicking <strong>"Watch on YouTube"</strong> to subscribe to their channels.
+        📺 All videos play <strong>right here on After12th AI</strong> via YouTube's standard player. We don't host or modify any video — full credit, views, and ad revenue go to the original creators.
       </div>
     </div>
   );

@@ -116,10 +116,6 @@ export default function PeriodicTable() {
               <div style={{ fontFamily: 'Sora', fontWeight: 800, fontSize: 22 }}>{sel.name}</div>
               <div style={{ color: 'var(--text-dim)', fontSize: 13, marginTop: 4 }}>{(CAT[sel.cat] || CAT.unknown).label}</div>
               <div style={{ color: 'var(--text-mid)', fontSize: 13, marginTop: 4 }}>Atomic number: {sel.num} · Atomic mass: {sel.mass}</div>
-              <a href={`https://en.wikipedia.org/wiki/${encodeURIComponent(sel.name)}`} target="_blank" rel="noopener noreferrer"
-                 style={{ color: 'var(--violet-2)', fontSize: 13, textDecoration: 'none', marginTop: 8, display: 'inline-block' }}>
-                Read more on Wikipedia →
-              </a>
             </div>
           </div>
         </div>

@@ -89,8 +89,7 @@ export default function BioDiagrams() {
               style={{ maxWidth: '100%', maxHeight: 380, objectFit: 'contain' }} />
           ) : (
             <div style={{ color: '#333', fontSize: 13, textAlign: 'center', padding: 20 }}>
-              Diagram temporarily unavailable.<br />
-              <a href={sel.img} target="_blank" rel="noopener noreferrer" style={{ color: '#8B5CF6' }}>Open image directly →</a>
+              Diagram temporarily unavailable. Please pick another diagram.
             </div>
           )}
         </div>
