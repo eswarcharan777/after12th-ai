@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet, Navigate } from 'react-router-dom';
 import { auth, isFirebaseConfigured, signOut } from '../../firebase';
 import XPBar from '../../components/XPBar';
+import ExamPicker from '../../components/ExamPicker';
 
 const nav = [
   { to: '/app/dashboard', icon: '📊', label: 'Dashboard' },
@@ -170,6 +171,7 @@ export default function AppLayout() {
 
   return (
     <div style={S.layout}>
+      <ExamPicker />
       {isMobile && sidebarOpen && (
         <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', zIndex: 199 }} />
       )}
@@ -210,6 +212,7 @@ export default function AppLayout() {
             onClick={async () => {
               try { if (isFirebaseConfigured && auth) await signOut(auth); } catch {}
               localStorage.removeItem('after12th_user');
+              sessionStorage.removeItem('after12th_exam_asked_this_session');
               navigate('/');
             }}
             style={{ ...S.navItem(false), padding: '10px 0', margin: 0, background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', color: 'var(--text-faint)', fontSize: 14 }}
