@@ -90,7 +90,10 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+      const provider = new GoogleAuthProvider();
+      // Always show account chooser, never silently reuse the last Google session.
+      provider.setCustomParameters({ prompt: 'select_account' });
+      const cred = await signInWithPopup(auth, provider);
       saveLocalProfile(cred.user);
       navigate('/app/dashboard');
     } catch (err) {

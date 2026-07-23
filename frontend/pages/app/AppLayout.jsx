@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useLocation, useNavigate, Outlet, Navigate } from 'react-router-dom';
 import { auth, isFirebaseConfigured, signOut } from '../../firebase';
 import XPBar from '../../components/XPBar';
@@ -88,15 +88,29 @@ const nav = [
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('after12th_user') || '{}');
+  const user = useMemo(() => JSON.parse(localStorage.getItem('after12th_user') || '{}'), []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+  const navScrollRef = useRef(null);
+  const SCROLL_KEY = 'after12th_sidebar_scroll';
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 900);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Restore sidebar scroll after route change so clicking an item doesn't fling us back to Dashboard.
+  useEffect(() => {
+    const saved = Number(sessionStorage.getItem(SCROLL_KEY) || 0);
+    if (navScrollRef.current && saved) {
+      navScrollRef.current.scrollTop = saved;
+    }
+  }, [location.pathname]);
+
+  const handleNavScroll = (e) => {
+    sessionStorage.setItem(SCROLL_KEY, String(e.currentTarget.scrollTop));
+  };
 
   if (!user.email) return <Navigate to="/login" replace />;
 
@@ -108,9 +122,9 @@ export default function AppLayout() {
     },
     sidebar: {
       width: 250,
-      background: 'rgba(15,21,48,0.7)',
-      backdropFilter: 'blur(24px) saturate(150%)',
-      WebkitBackdropFilter: 'blur(24px) saturate(150%)',
+      background: 'rgba(15,21,48,0.94)',
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
       borderRight: '1px solid var(--border)',
       color: 'var(--text)',
       display: 'flex', flexDirection: 'column',
@@ -146,9 +160,9 @@ export default function AppLayout() {
     }),
     main: { flex: 1, minWidth: 0, padding: '0', position: 'relative' },
     topbar: {
-      background: 'rgba(11,15,31,0.6)',
-      backdropFilter: 'blur(20px) saturate(150%)',
-      WebkitBackdropFilter: 'blur(20px) saturate(150%)',
+      background: 'rgba(11,15,31,0.92)',
+      backdropFilter: 'blur(10px)',
+      WebkitBackdropFilter: 'blur(10px)',
       borderBottom: '1px solid var(--border)',
       padding: '0 26px', height: 66,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -190,20 +204,25 @@ export default function AppLayout() {
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: '12px 0', overflowY: 'auto' }}>
-          {nav.map((n, i) => (
-            <Link
-              key={n.to}
-              to={n.to}
-              style={{ ...S.navItem(location.pathname === n.to), animation: `slideInLeft 0.4s cubic-bezier(.22,1,.36,1) ${i * 50}ms backwards` }}
-              onClick={() => setSidebarOpen(false)}
-              onMouseEnter={e => { if (location.pathname !== n.to) { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--text)'; } }}
-              onMouseLeave={e => { if (location.pathname !== n.to) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-mid)'; } }}
-            >
-              <span style={{ fontSize: 18 }}>{n.icon}</span>
-              {n.label}
-            </Link>
-          ))}
+        <nav
+          ref={navScrollRef}
+          onScroll={handleNavScroll}
+          style={{ flex: 1, padding: '12px 0', overflowY: 'auto', contain: 'strict', willChange: 'scroll-position' }}
+        >
+          {nav.map((n) => {
+            const active = location.pathname === n.to;
+            return (
+              <Link
+                key={n.to}
+                to={n.to}
+                className={`a12-nav-item${active ? ' active' : ''}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <span style={{ fontSize: 18 }}>{n.icon}</span>
+                {n.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div style={{ padding: '14px 22px', borderTop: '1px solid var(--border)' }}>
@@ -243,10 +262,29 @@ export default function AppLayout() {
       </div>
 
       <style>{`
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-20px); }
-          to   { opacity: 1; transform: translateX(0); }
+        .a12-nav-item {
+          display: flex; align-items: center; gap: 12px;
+          padding: 12px 22px; margin: 2px 12px;
+          font-size: 14px; font-weight: 600;
+          color: var(--text-mid);
+          background: transparent;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: color 0.18s, background 0.18s, border-color 0.18s;
         }
+        .a12-nav-item:hover {
+          background: rgba(255,255,255,0.04);
+          color: var(--text);
+        }
+        .a12-nav-item.active {
+          color: #fff;
+          background: linear-gradient(90deg, rgba(139,92,246,0.25), rgba(236,72,153,0.15));
+          border-color: rgba(139,92,246,0.4);
+          box-shadow: 0 6px 20px rgba(139,92,246,0.25);
+        }
+        aside { will-change: transform; }
       `}</style>
     </div>
   );
