@@ -32,14 +32,14 @@ const nav = [
   { to: '/app/wrapped', icon: '📊', label: 'Year Wrapped' },
   { to: '/app/scorecard', icon: '📸', label: 'Score Card' },
   { to: '/app/certificate', icon: '🎓', label: 'Certificate' },
-  { to: '/app/buddy', icon: '💬', label: 'Study Buddy' },
-  { to: '/app/rooms', icon: '📺', label: 'Study Rooms' },
-  { to: '/app/messages', icon: '💌', label: 'Messages' },
-  { to: '/app/discussions', icon: '🎤', label: 'Discussions' },
-  { to: '/app/senior', icon: '👨‍🏫', label: 'Ask a Senior' },
-  { to: '/app/groups', icon: '🤝', label: 'Group Challenges' },
-  { to: '/app/alumni', icon: '👨‍🎓', label: 'Alumni Network' },
-  { to: '/app/news', icon: '📣', label: 'Announcements' },
+  { to: '/app/buddy', icon: '💬', label: 'Study Buddy', soon: true },
+  { to: '/app/rooms', icon: '📺', label: 'Study Rooms', soon: true },
+  { to: '/app/messages', icon: '💌', label: 'Messages', soon: true },
+  { to: '/app/discussions', icon: '🎤', label: 'Discussions', soon: true },
+  { to: '/app/senior', icon: '👨‍🏫', label: 'Ask a Senior', soon: true },
+  { to: '/app/groups', icon: '🤝', label: 'Group Challenges', soon: true },
+  { to: '/app/alumni', icon: '👨‍🎓', label: 'Alumni Network', soon: true },
+  { to: '/app/news', icon: '📣', label: 'Announcements', soon: true },
   { to: '/app/calculator', icon: '🧮', label: 'Calculator' },
   { to: '/app/periodic', icon: '🌍', label: 'Periodic Table' },
   { to: '/app/whiteboard', icon: '🎨', label: 'Whiteboard' },
@@ -48,15 +48,15 @@ const nav = [
   { to: '/app/pyq', icon: '📝', label: 'PYQ Papers' },
   { to: '/app/ncert', icon: '📚', label: 'NCERT Solutions' },
   { to: '/app/articles', icon: '📖', label: 'Concept Articles' },
-  { to: '/app/podcast', icon: '📻', label: 'Podcast' },
+  { to: '/app/podcast', icon: '📻', label: 'Podcast', soon: true },
   { to: '/app/career', icon: '🏢', label: 'Career Explorer' },
   { to: '/app/interview', icon: '🎤', label: 'Mock Interview' },
   { to: '/app/sop', icon: '📝', label: 'SOP Writer' },
   { to: '/app/compare', icon: '🎓', label: 'College Compare' },
-  { to: '/app/counselling', icon: '📞', label: 'Book Counselling' },
-  { to: '/app/mentorship', icon: '🎯', label: 'Mentorship' },
-  { to: '/app/internships', icon: '💼', label: 'Internships' },
-  { to: '/app/workshops', icon: '🎟️', label: 'Workshops' },
+  { to: '/app/counselling', icon: '📞', label: 'Book Counselling', soon: true },
+  { to: '/app/mentorship', icon: '🎯', label: 'Mentorship', soon: true },
+  { to: '/app/internships', icon: '💼', label: 'Internships', soon: true },
+  { to: '/app/workshops', icon: '🎟️', label: 'Workshops', soon: true },
   { to: '/app/lastminute', icon: '📋', label: 'Last-Min Revision' },
   { to: '/app/examchecklist', icon: '🎯', label: 'Exam Checklist' },
   { to: '/app/calm', icon: '🧠', label: 'Calm Mode' },
@@ -66,8 +66,8 @@ const nav = [
   { to: '/app/hydration', icon: '💧', label: 'Hydration' },
   { to: '/app/story', icon: '🤖', label: 'My Story' },
   { to: '/app/wallpapers', icon: '🖼', label: 'Wallpapers' },
-  { to: '/app/books', icon: '🛒', label: 'Books Store' },
-  { to: '/app/premium', icon: '💎', label: 'Go Premium' },
+  { to: '/app/books', icon: '🛒', label: 'Books Store', soon: true },
+  { to: '/app/premium', icon: '💎', label: 'Go Premium', soon: true },
   { to: '/app/theme', icon: '🌈', label: 'Themes' },
   { to: '/app/shortcuts', icon: '⌨️', label: 'Shortcuts' },
   { to: '/app/mocktest', icon: '📝', label: 'Mock Test' },
@@ -250,11 +250,12 @@ export default function AppLayout() {
                 <Link
                   key={n.to}
                   to={n.to}
-                  className={`a12-nav-item${active ? ' active' : ''}`}
+                  className={`a12-nav-item${active ? ' active' : ''}${n.soon ? ' soon' : ''}`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <span style={{ fontSize: 18 }}>{n.icon}</span>
-                  {n.label}
+                  <span style={{ flex: 1 }}>{n.label}</span>
+                  {n.soon && <span className="a12-soon-badge">Soon</span>}
                 </Link>
               );
             });
@@ -321,6 +322,16 @@ export default function AppLayout() {
           box-shadow: 0 6px 20px rgba(139,92,246,0.25);
         }
         aside { will-change: transform; }
+        .a12-nav-item.soon { opacity: 0.68; }
+        .a12-nav-item.soon:hover { opacity: 1; }
+        .a12-soon-badge {
+          font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
+          padding: 2px 7px; border-radius: 999px;
+          background: rgba(245,166,35,0.18);
+          color: #FCD34D;
+          border: 1px solid rgba(245,166,35,0.4);
+          text-transform: uppercase;
+        }
       `}</style>
     </div>
   );
