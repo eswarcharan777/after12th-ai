@@ -1,39 +1,58 @@
 import React, { useState } from 'react';
 
-// Real NCERT-quality diagrams served from /public/diagrams/
-// (populated by scripts/fetch-assets.ps1 — free-license Wikimedia Commons files).
+// Real NCERT-quality diagrams. Prefer local /public/diagrams/ if present
+// (populated by scripts/fetch-assets.ps1); otherwise fall back to the
+// free-license Wikimedia Commons original so the image always renders.
 const DIAG = [
   { key: 'animal',    name: 'Animal Cell',      emoji: '🔬', img: '/diagrams/animal-cell.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Animal_cell_structure_en.svg/1024px-Animal_cell_structure_en.svg.png',
     parts: ['Nucleus', 'Nucleolus', 'Mitochondria', 'Endoplasmic Reticulum', 'Golgi Apparatus', 'Ribosome', 'Lysosome', 'Cell Membrane', 'Cytoplasm'] },
   { key: 'plant',     name: 'Plant Cell',       emoji: '🌱', img: '/diagrams/plant-cell.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Plant_cell_structure_svg-en.svg/1024px-Plant_cell_structure_svg-en.svg.png',
     parts: ['Cell Wall', 'Plasma Membrane', 'Nucleus', 'Chloroplast', 'Central Vacuole', 'Mitochondria', 'Cytoplasm', 'Plasmodesmata'] },
   { key: 'heart',     name: 'Human Heart',      emoji: '❤️', img: '/diagrams/heart.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Diagram_of_the_human_heart_%28cropped%29.svg/900px-Diagram_of_the_human_heart_%28cropped%29.svg.png',
     parts: ['Right Atrium', 'Left Atrium', 'Right Ventricle', 'Left Ventricle', 'Aorta', 'Pulmonary Artery', 'Superior Vena Cava', 'Tricuspid Valve', 'Mitral Valve'] },
   { key: 'nephron',   name: 'Nephron',          emoji: '🫘', img: '/diagrams/nephron.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Physiology_of_Nephron.png/900px-Physiology_of_Nephron.png',
     parts: ['Glomerulus', "Bowman's Capsule", 'Proximal Convoluted Tubule (PCT)', 'Loop of Henle', 'Distal Convoluted Tubule (DCT)', 'Collecting Duct'] },
   { key: 'neuron',    name: 'Neuron',           emoji: '🧠', img: '/diagrams/neuron.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Neuron.svg/1024px-Neuron.svg.png',
     parts: ['Cell Body (Soma)', 'Dendrites', 'Axon', 'Myelin Sheath', 'Nodes of Ranvier', 'Axon Terminals'] },
   { key: 'dna',       name: 'DNA Structure',    emoji: '🧬', img: '/diagrams/dna.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/DNA_chemical_structure.svg/800px-DNA_chemical_structure.svg.png',
     parts: ['Sugar-phosphate backbone', 'Adenine (A)', 'Thymine (T)', 'Guanine (G)', 'Cytosine (C)', 'Hydrogen bonds', 'Antiparallel strands'] },
   { key: 'intestine', name: 'Small Intestine',  emoji: '🌀', img: '/diagrams/small-intestine.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Blausen_0817_SmallIntestine_Anatomy.png/900px-Blausen_0817_SmallIntestine_Anatomy.png',
     parts: ['Duodenum', 'Jejunum', 'Ileum', 'Villi', 'Microvilli', 'Lacteals'] },
   { key: 'eye',       name: 'Human Eye',        emoji: '👁️', img: '/diagrams/eye.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Schematic_diagram_of_the_human_eye_en.svg/1024px-Schematic_diagram_of_the_human_eye_en.svg.png',
     parts: ['Cornea', 'Iris', 'Pupil', 'Lens', 'Retina', 'Optic Nerve', 'Ciliary Body', 'Vitreous Humour'] },
   { key: 'brain',     name: 'Human Brain',      emoji: '🧠', img: '/diagrams/brain.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/1311_Brain_Stem.jpg/900px-1311_Brain_Stem.jpg',
     parts: ['Cerebrum', 'Cerebellum', 'Brain Stem', 'Frontal Lobe', 'Parietal Lobe', 'Corpus Callosum'] },
   { key: 'digestive', name: 'Digestive System', emoji: '🍽️', img: '/diagrams/digestive.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Digestive_system_diagram_en.svg/700px-Digestive_system_diagram_en.svg.png',
     parts: ['Mouth', 'Oesophagus', 'Stomach', 'Liver', 'Pancreas', 'Small Intestine', 'Large Intestine', 'Rectum'] },
   { key: 'respiratory', name: 'Respiratory System', emoji: '🫁', img: '/diagrams/respiratory.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Respiratory_system_complete_en.svg/700px-Respiratory_system_complete_en.svg.png',
     parts: ['Nasal Cavity', 'Pharynx', 'Larynx', 'Trachea', 'Bronchi', 'Bronchioles', 'Alveoli', 'Diaphragm'] },
   { key: 'mito',      name: 'Mitochondrion',    emoji: '⚡', img: '/diagrams/mitochondrion.png',
+    fallback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Mitochondrion_structure.svg/1024px-Mitochondrion_structure.svg.png',
     parts: ['Outer Membrane', 'Inner Membrane', 'Cristae', 'Matrix', 'Intermembrane Space', 'DNA', 'Ribosomes'] },
 ];
 
 export default function BioDiagrams() {
   const [sel, setSel] = useState(DIAG[0]);
+  const [src, setSrc] = useState(DIAG[0].img);
   const [imgOk, setImgOk] = useState(true);
 
-  const pick = (d) => { setImgOk(true); setSel(d); };
+  const pick = (d) => { setImgOk(true); setSel(d); setSrc(d.img); };
+  const onImgError = () => {
+    // Local file missing → try the free-license fallback URL.
+    if (src === sel.img && sel.fallback) { setSrc(sel.fallback); return; }
+    setImgOk(false);
+  };
 
   return (
     <div className="page-enter" style={{ maxWidth: 1100, margin: '0 auto' }}>
@@ -57,11 +76,11 @@ export default function BioDiagrams() {
       <div className="glass-strong" style={{ padding: 22, borderRadius: 16, display: 'grid', gridTemplateColumns: 'minmax(300px, 1.4fr) minmax(220px, 1fr)', gap: 22 }}>
         <div style={{ background: '#fff', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 380 }}>
           {imgOk ? (
-            <img src={sel.img} alt={sel.name} loading="eager" onError={() => setImgOk(false)}
+            <img src={src} alt={sel.name} loading="eager" onError={onImgError}
               style={{ maxWidth: '100%', maxHeight: 440, objectFit: 'contain' }} />
           ) : (
-            <div style={{ color: '#666', fontSize: 13, textAlign: 'center', padding: 20, lineHeight: 1.6 }}>
-              Diagram file missing — run <code style={{ background: '#eee', padding: '2px 6px', borderRadius: 4 }}>scripts/fetch-assets.ps1</code> from the project root, then redeploy.
+            <div style={{ color: '#666', fontSize: 13, textAlign: 'center', padding: 20 }}>
+              Diagram temporarily unavailable — please pick another.
             </div>
           )}
         </div>

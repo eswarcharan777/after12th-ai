@@ -12,8 +12,15 @@ export default function ExamPicker() {
     let u; try { u = JSON.parse(raw); } catch { setChecking(false); return; }
     setUser(u);
 
-    // 1. If this profile already recorded a locked choice, skip.
-    if (u.examChosen) { setChecking(false); return; }
+    // 1. If this profile already recorded a choice, skip.
+    // Legacy users have `exam` set but no `examChosen` flag — treat them as locked.
+    if (u.examChosen || u.exam) {
+      if (u.exam && !u.examChosen) {
+        // Backfill the flag so we don't ask them again next time.
+        localStorage.setItem('after12th_user', JSON.stringify({ ...u, examChosen: true }));
+      }
+      setChecking(false); return;
+    }
 
     // 2. Try Firestore — the choice may have been locked on another device.
     (async () => {

@@ -30,8 +30,9 @@ export default function Login() {
       // Explicit signup pick → lock it in.
       profile.exam = extra.exam;
       profile.examChosen = true;
-    } else if (samePerson && prev.examChosen) {
-      // Returning user on same device → keep their locked choice.
+    } else if (samePerson && (prev.examChosen || prev.exam)) {
+      // Returning user on same device (including legacy users who had exam
+      // set before the examChosen flag existed) → keep their choice locked.
       profile.exam = prev.exam;
       profile.examChosen = true;
     }

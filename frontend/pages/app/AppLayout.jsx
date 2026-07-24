@@ -44,7 +44,7 @@ const nav = [
   { to: '/app/periodic', icon: '🌍', label: 'Periodic Table' },
   { to: '/app/whiteboard', icon: '🎨', label: 'Whiteboard' },
   { to: '/app/molecule', icon: '📐', label: '3D Molecule' },
-  { to: '/app/biodiagrams', icon: '🧬', label: 'Bio Diagrams' },
+  { to: '/app/biodiagrams', icon: '🧬', label: 'Bio Diagrams', only: 'NEET' },
   { to: '/app/pyq', icon: '📝', label: 'PYQ Papers' },
   { to: '/app/ncert', icon: '📚', label: 'NCERT Solutions' },
   { to: '/app/articles', icon: '📖', label: 'Concept Articles' },
@@ -238,7 +238,9 @@ export default function AppLayout() {
         >
           {(() => {
             const q = navQuery.trim().toLowerCase();
-            const filtered = q ? nav.filter(n => n.label.toLowerCase().includes(q)) : nav;
+            const userExam = user.exam || 'NEET';
+            const examFiltered = nav.filter(n => !n.only || n.only === userExam);
+            const filtered = q ? examFiltered.filter(n => n.label.toLowerCase().includes(q)) : examFiltered;
             if (filtered.length === 0) {
               return <div style={{ padding: '18px 24px', fontSize: 13, color: 'var(--text-faint)' }}>No matches for "{navQuery}"</div>;
             }
