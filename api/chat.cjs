@@ -142,7 +142,10 @@ const DEMO_REPLIES = {
   college: JSON.stringify({ shortlist: [{ college: "IIT Delhi", branch: "CSE", type: "IIT", location: "New Delhi", nirf: 2, fees: "2.1 LPA", cutoff2024: "General: 54", chance: "Reach", reason: "Set API key for personalized list" }], message: "Demo mode - please configure your API key." }),
 };
 
-async function callGemini({ systemPrompt, messages, image }) {
+// Modes that must return structured JSON — Gemini is forced into JSON mode.
+const JSON_MODES = new Set(['branch', 'planner', 'qgen', 'roadmap', 'college']);
+
+async function callGemini({ systemPrompt, messages, image, jsonMode = false }) {
   const apiKey = process.env.GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
@@ -157,10 +160,17 @@ async function callGemini({ systemPrompt, messages, image }) {
     last.parts.push({ inlineData: { mimeType: image.mimeType || 'image/jpeg', data: image.data } });
   }
 
+  const generationConfig = {
+    maxOutputTokens: 4096,
+    temperature: jsonMode ? 0.4 : 0.7,   // lower temp for structured output = more reliable
+  };
+  // Gemini's native JSON mode — guarantees the response is valid JSON.
+  if (jsonMode) generationConfig.responseMimeType = 'application/json';
+
   const body = {
     systemInstruction: { parts: [{ text: systemPrompt }] },
     contents,
-    generationConfig: { maxOutputTokens: 2048, temperature: 0.7 },
+    generationConfig,
   };
 
   const resp = await fetch(url, {
@@ -197,7 +207,8 @@ async function chatHandler(req, res) {
       return res.json({ reply: DEMO_REPLIES[mode] || DEMO_REPLIES.tutor });
     }
 
-    let reply = await callGemini({ systemPrompt, messages, image });
+    const jsonMode = JSON_MODES.has(mode);
+    let reply = await callGemini({ systemPrompt, messages, image, jsonMode });
 
     // Strip ```json fences if present (for structured modes)
     if (mode && !['tutor', 'photo', 'summarize', 'explain'].includes(mode)) {
