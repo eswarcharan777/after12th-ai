@@ -10,21 +10,44 @@ export default function QuestionGenerator() {
   const [answers, setAnswers] = useState({});
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const generate = async () => {
-    setLoading(true); setQuestions(null); setAnswers({}); setShowAll(false);
+    setLoading(true); setQuestions(null); setAnswers({}); setShowAll(false); setError('');
     const prompt = `Generate ${count} ${difficulty}-difficulty ${exam} MCQ questions on ${subject} — topic: ${topic}.`;
+
+    // 45s timeout so the button never gets stuck on a hung request (e.g. Render cold start).
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 45000);
+
     try {
       const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'qgen', messages: [{ role: 'user', content: prompt }] })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'qgen', messages: [{ role: 'user', content: prompt }] }),
+        signal: ctrl.signal,
       });
+      clearTimeout(timer);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const j = await r.json();
-      const parsed = JSON.parse(j.reply);
+      if (j.error) throw new Error(j.error);
+      let reply = (j.reply || '').trim();
+      if (!reply) throw new Error('empty reply');
+      // Strip ```json fences even though the server tries to — some models slip through.
+      reply = reply.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+      const parsed = JSON.parse(reply);
+      if (!parsed || !Array.isArray(parsed.questions)) throw new Error('bad shape');
       setQuestions(parsed);
       window.__a12Toast && window.__a12Toast(`${parsed.questions.length} questions ready!`, 'success');
     } catch (e) {
-      window.__a12Toast && window.__a12Toast('Generation failed — try again', 'error');
+      clearTimeout(timer);
+      const msg = e.name === 'AbortError'
+        ? 'Request timed out. Backend may be waking up — try once more in ~15 seconds.'
+        : e.message === 'empty reply' || e.message === 'bad shape'
+          ? 'AI returned an unexpected response. Try a simpler topic or rephrase.'
+          : 'Could not reach the AI. Backend may be waking up — retry in ~15 seconds.';
+      setError(msg);
+      window.__a12Toast && window.__a12Toast('Generation failed', 'error');
     } finally { setLoading(false); }
   };
 
@@ -57,10 +80,25 @@ export default function QuestionGenerator() {
         </label>
         <div style={{ display: 'flex', alignItems: 'flex-end' }}>
           <button className="btn-primary" onClick={generate} disabled={loading} style={{ width: '100%' }}>
-            {loading ? 'Generating...' : '✨ Generate'}
+            {loading ? 'Generating…' : '✨ Generate'}
           </button>
         </div>
       </div>
+
+      {loading && (
+        <div className="glass" style={{ padding: 18, borderRadius: 12, textAlign: 'center', color: 'var(--text-dim)', marginBottom: 16 }}>
+          🤖 Generating {count} {difficulty} {exam} questions on <strong style={{ color: 'var(--text)' }}>{topic}</strong>…
+          <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>
+            First request after a while can take 15-30s (backend cold start).
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div style={{ padding: 14, background: 'rgba(239,68,68,0.12)', border: '1px solid #EF4444', color: '#FCA5A5', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
+          {error}
+        </div>
+      )}
 
       {questions && (
         <div>
