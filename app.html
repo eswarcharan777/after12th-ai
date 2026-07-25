@@ -177,8 +177,11 @@
           if (document.querySelector('#root > :not(.a12-boot)')) { obs.disconnect(); hideBoot(); }
         });
         obs.observe(document.getElementById('root'), { childList: true, subtree: true });
-        // Safety net: even if React errors during mount, never leave the loader stuck.
-        setTimeout(function () { obs.disconnect(); hideBoot(); }, 6000);
+        // Hard cap: loader is off-screen in 1.5s no matter what.
+        // Also react to the very first stylesheet load — that's when the
+        // real app is ready to paint on most connections.
+        setTimeout(function () { obs.disconnect(); hideBoot(); }, 1500);
+        window.addEventListener('load', function () { setTimeout(hideBoot, 200); });
       })();
     </script>
     <noscript>
