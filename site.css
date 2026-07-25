@@ -162,14 +162,51 @@ span[style*="color:var(--gray)"]{color:#94A3B8!important}
 section h1,section h2,section h3,section h4{color:#F5F7FF}
 section p,section li{color:#B0C4DE}
 
-/* 6. Small colored icon badges (peach/mint/lavender pastels) — dim them
-      so they don't pop too bright on the dark theme. */
-div[style*="background:#FFF3E8"],div[style*="background: #FFF3E8"],
-div[style*="background:#E8F5E9"],div[style*="background: #E8F5E9"],
-div[style*="background:#EEF2FF"],div[style*="background: #EEF2FF"],
-div[style*="background:#FDF2F8"],div[style*="background: #FDF2F8"],
-div[style*="background:#FFF8E1"],div[style*="background: #FFF8E1"]{
-  opacity:0.9;
+/* 6. NEAR-WHITE GREY CHIPS — the little chapter/topic pills you see all
+      over NEET/JEE/Colleges pages (background:#F8F9FC etc.). Convert
+      them to dark glass chips with light text. */
+div[style*="background:#F8F9FC"],div[style*="background: #F8F9FC"],
+div[style*="background:#F9FAFB"],div[style*="background: #F9FAFB"],
+div[style*="background:#F3F4F6"],div[style*="background: #F3F4F6"],
+div[style*="background:#F5F7FF"],div[style*="background: #F5F7FF"],
+div[style*="background:#FAFAFA"],div[style*="background: #FAFAFA"],
+div[style*="background:#F1F5F9"],div[style*="background: #F1F5F9"],
+span[style*="background:#F8F9FC"],span[style*="background: #F8F9FC"]{
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  color:#E5E7EB!important;
+}
+
+/* 7. PASTEL ALERT/BADGE BLOCKS (peach/mint/lavender/pink/cream/warm) —
+      convert to tinted dark blocks that keep the color association but
+      look native to the dark theme. */
+div[style*="background:#FFF3E8"],div[style*="background: #FFF3E8"]{
+  background:rgba(245,166,35,.14)!important;border:1px solid rgba(245,166,35,.35)!important;color:#FDE68A!important;
+}
+div[style*="background:#E8F5E9"],div[style*="background: #E8F5E9"]{
+  background:rgba(16,185,129,.14)!important;border:1px solid rgba(16,185,129,.35)!important;color:#86EFAC!important;
+}
+div[style*="background:#EEF2FF"],div[style*="background: #EEF2FF"]{
+  background:rgba(139,92,246,.14)!important;border:1px solid rgba(139,92,246,.35)!important;color:#C4B5FD!important;
+}
+div[style*="background:#FDF2F8"],div[style*="background: #FDF2F8"]{
+  background:rgba(236,72,153,.14)!important;border:1px solid rgba(236,72,153,.35)!important;color:#F9A8D4!important;
+}
+div[style*="background:#FFF8E1"],div[style*="background: #FFF8E1"],
+div[style*="background:#FFF7ED"],div[style*="background: #FFF7ED"]{
+  background:rgba(245,166,35,.12)!important;border:1px solid rgba(245,166,35,.3)!important;color:#FCD34D!important;
+}
+
+/* 8. .cs-b (colleges filter tag) uses var(--offwhite) in a class rule */
+.cs-b{
+  background:rgba(255,255,255,.06)!important;
+  color:#E5E7EB!important;
+}
+
+/* 9. Any anchor link that used background:#fff (like "Get Started Free")
+      keeps its call-to-action punch on the dark aurora. */
+a[style*="background:#fff"],a[style*="background: #fff"]{
+  background:#fff!important;color:var(--saffron)!important;
 }
 
 /* ── PILLS ── */
