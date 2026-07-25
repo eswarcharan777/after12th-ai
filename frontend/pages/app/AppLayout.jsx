@@ -240,7 +240,12 @@ export default function AppLayout() {
             const q = navQuery.trim().toLowerCase();
             const userExam = user.exam || 'NEET';
             const examFiltered = nav.filter(n => !n.only || n.only === userExam);
-            const filtered = q ? examFiltered.filter(n => n.label.toLowerCase().includes(q)) : examFiltered;
+            // Live features first, "Coming Soon" ones grouped at the bottom.
+            const ordered = [
+              ...examFiltered.filter(n => !n.soon),
+              ...examFiltered.filter(n => n.soon),
+            ];
+            const filtered = q ? ordered.filter(n => n.label.toLowerCase().includes(q)) : ordered;
             if (filtered.length === 0) {
               return <div style={{ padding: '18px 24px', fontSize: 13, color: 'var(--text-faint)' }}>No matches for "{navQuery}"</div>;
             }

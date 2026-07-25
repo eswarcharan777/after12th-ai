@@ -163,15 +163,23 @@
     </div>
     <script>
       // Fade out the boot screen once React mounts.
-      const obs = new MutationObserver(() => {
-        const boot = document.getElementById('a12Boot');
-        if (boot && document.querySelector('#root > :not(.a12-boot)')) {
+      (function () {
+        var removed = false;
+        function hideBoot() {
+          if (removed) return;
+          removed = true;
+          var boot = document.getElementById('a12Boot');
+          if (!boot) return;
           boot.style.opacity = '0';
-          setTimeout(() => boot.remove(), 400);
-          obs.disconnect();
+          setTimeout(function () { if (boot && boot.parentNode) boot.parentNode.removeChild(boot); }, 400);
         }
-      });
-      obs.observe(document.getElementById('root'), { childList: true, subtree: true });
+        var obs = new MutationObserver(function () {
+          if (document.querySelector('#root > :not(.a12-boot)')) { obs.disconnect(); hideBoot(); }
+        });
+        obs.observe(document.getElementById('root'), { childList: true, subtree: true });
+        // Safety net: even if React errors during mount, never leave the loader stuck.
+        setTimeout(function () { obs.disconnect(); hideBoot(); }, 6000);
+      })();
     </script>
     <noscript>
       <div style="padding:40px;font-family:Arial;color:#fff;background:#0B0F1F;min-height:100vh;text-align:center">

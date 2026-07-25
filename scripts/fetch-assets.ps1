@@ -23,6 +23,19 @@ $diagrams = @{
   'respiratory.png'    = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Respiratory_system_complete_en.svg/700px-Respiratory_system_complete_en.svg.png'
   'digestive.png'      = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Digestive_system_diagram_en.svg/700px-Digestive_system_diagram_en.svg.png'
   'mitochondrion.png'  = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Mitochondrion_structure.svg/1024px-Mitochondrion_structure.svg.png'
+  'chloroplast.png'    = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Chloroplast_diagram.svg/1024px-Chloroplast_diagram.svg.png'
+  'photosynthesis.png' = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Simple_photosynthesis_overview.svg/900px-Simple_photosynthesis_overview.svg.png'
+  'mitosis.png'        = 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Major_events_in_mitosis.svg/1024px-Major_events_in_mitosis.svg.png'
+  'meiosis.png'        = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Meiosis_Overview_new.svg/1024px-Meiosis_Overview_new.svg.png'
+  'skeleton.png'       = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Human_skeleton_front_en.svg/500px-Human_skeleton_front_en.svg.png'
+  'muscle.png'         = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/414_Skeletal_Smooth_Cardiac.jpg/900px-414_Skeletal_Smooth_Cardiac.jpg'
+  'blood.png'          = 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Blausen_0761_RedWhiteBloodcells.png/900px-Blausen_0761_RedWhiteBloodcells.png'
+  'reflex.png'         = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Imgnotxt-reflex-arc-1.png/900px-Imgnotxt-reflex-arc-1.png'
+  'flower.png'         = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Mature_flower_diagram.svg/900px-Mature_flower_diagram.svg.png'
+  'foodchain.png'      = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Food_chain.svg/900px-Food_chain.svg.png'
+  'endocrine.png'      = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Illu_endocrine_system_New.svg/500px-Illu_endocrine_system_New.svg.png'
+  'virus.png'          = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/HIV_gross.png/800px-HIV_gross.png'
+  'bacteria.png'       = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Average_prokaryote_cell-_en.svg/1024px-Average_prokaryote_cell-_en.svg.png'
 }
 
 # PubChem CIDs — public domain molecule renderings.
