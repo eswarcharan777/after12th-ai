@@ -78,46 +78,99 @@ header{position:sticky;top:0;z-index:999;background:rgba(11,15,31,.85);backdrop-
 .stat-box .val{font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:#F5F7FF}
 .stat-box .lbl{color:#94A3B8;font-size:12px;margin-top:3px}
 
-/* ── DARK-THEME OVERRIDES ─────────────────────────────
-   Neutralise legacy inline `background:#fff` on section/article/card
-   blocks so every page inherits the unified aurora dark aesthetic. */
+/* ══════════════════════════════════════════════════════════════════
+   AURORA DARK THEME — BULLETPROOF OVERRIDES
+   Catches every legacy white / offwhite background across all pages
+   and forces the unified dark aesthetic. Uses `!important` because
+   many patterns are inline styles that would otherwise win.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1. SECTIONS — any section with any white/offwhite bg becomes transparent
+      so the body's dark aurora shows through. */
 section[style*="background:#fff"],
-section[style*="background: #fff"]{background:transparent!important;color:#E5E7EB}
-article[style*="background:#fff"]{
+section[style*="background: #fff"],
+section[style*="background:#FFF"],
+section[style*="background:white"],
+section[style*="background:var(--white)"],
+section[style*="background:var(--offwhite)"]{
+  background:transparent!important;color:#E5E7EB!important;
+}
+section[style*="background:#fff"] .sec-title,
+section[style*="background: #fff"] .sec-title,
+section[style*="background:var(--offwhite)"] .sec-title{color:#F5F7FF!important}
+section[style*="background:#fff"] p,
+section[style*="background: #fff"] p,
+section[style*="background:var(--offwhite)"] p{color:#B0C4DE!important}
+
+/* 2. CARDS — every card variant becomes a dark glass panel. */
+.card,.feat-card,.col-card,.stat-box,
+article[style*="background:#fff"],
+article[style*="background: #fff"],
+div[style*="background:#fff;border-radius"],
+div[style*="background: #fff;border-radius"]{
   background:rgba(255,255,255,.04)!important;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border:1px solid rgba(255,255,255,.08)!important;
   color:#E5E7EB!important;
+  box-shadow:0 8px 32px rgba(0,0,0,.3)!important;
 }
-article[style*="background:#fff"] h1,
-article[style*="background:#fff"] h2,
-article[style*="background:#fff"] h3{color:#F5F7FF!important}
-.feat-card,.col-card{
-  background:rgba(255,255,255,.04)!important;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.08)!important;
-  color:#E5E7EB!important;
+.card h1,.card h2,.card h3,.card h4,
+.feat-card h1,.feat-card h2,.feat-card h3,.feat-card h4,
+.col-card h1,.col-card h2,.col-card h3,.col-card h4,
+article[style*="background:#fff"] h1,article[style*="background:#fff"] h2,article[style*="background:#fff"] h3{
+  color:#F5F7FF!important;
 }
-.feat-card h1,.feat-card h2,.feat-card h3,
-.col-card h1,.col-card h2,.col-card h3{color:#F5F7FF!important}
-.filter-row{
-  background:rgba(255,255,255,.04)!important;
-  border:1px solid rgba(255,255,255,.08)!important;
+.card p,.card li,
+.feat-card p,.col-card p,
+article[style*="background:#fff"] p{color:#B0C4DE!important}
+.card-hover:hover,.feat-card:hover,.col-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(139,92,246,.45)!important;
+  box-shadow:0 16px 48px rgba(139,92,246,.22)!important;
 }
-.filter-row input,.filter-row select,
-input[style*="background:#fff"],select[style*="background:#fff"]{
+
+/* 3. FORMS / FILTERS — inputs, selects, tab buttons go dark too. */
+.filter-row,
+input[style*="background:#fff"],
+select[style*="background:#fff"],
+input[style*="background: #fff"],
+select[style*="background: #fff"]{
   background:rgba(255,255,255,.05)!important;
   border:1px solid rgba(255,255,255,.12)!important;
   color:#E5E7EB!important;
+}
+.filter-row input,.filter-row select{
+  background:rgba(255,255,255,.06)!important;
+  color:#E5E7EB!important;
+  border:1px solid rgba(255,255,255,.15)!important;
 }
 .tab-btn{
   background:rgba(255,255,255,.04)!important;
   border:2px solid rgba(255,255,255,.12)!important;
   color:#E5E7EB!important;
 }
-/* Dark headings/text on any section that lost its light background */
+.tab-btn:hover{border-color:var(--violet-2)!important;color:#fff!important}
+
+/* 4. TEXT COLORS — anything still using dark navy/gray on the now-dark body
+      needs to become light so it's readable. */
+p[style*="color:var(--gray)"],
+p[style*="color: var(--gray)"],
+div[style*="color:var(--gray)"],
+span[style*="color:var(--gray)"]{color:#94A3B8!important}
+
+/* 5. Default heading/paragraph fallback inside sections */
 section h1,section h2,section h3,section h4{color:#F5F7FF}
 section p,section li{color:#B0C4DE}
+
+/* 6. Small colored icon badges (peach/mint/lavender pastels) — dim them
+      so they don't pop too bright on the dark theme. */
+div[style*="background:#FFF3E8"],div[style*="background: #FFF3E8"],
+div[style*="background:#E8F5E9"],div[style*="background: #E8F5E9"],
+div[style*="background:#EEF2FF"],div[style*="background: #EEF2FF"],
+div[style*="background:#FDF2F8"],div[style*="background: #FDF2F8"],
+div[style*="background:#FFF8E1"],div[style*="background: #FFF8E1"]{
+  opacity:0.9;
+}
 
 /* ── PILLS ── */
 .pill{display:inline-block;padding:4px 12px;border-radius:14px;font-size:12px;font-weight:700}
