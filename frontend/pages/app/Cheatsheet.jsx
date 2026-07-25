@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 
 export default function Cheatsheet() {
   const [input, setInput] = useState('');
@@ -10,14 +11,10 @@ export default function Cheatsheet() {
     setLoading(true); setSheet('');
     const prompt = `Build a compact 1-page exam cheatsheet from this content. Include: key formulas (boxed), core definitions, common traps, and a "must-remember" section. Use markdown-like structure. Content:\n\n${input}`;
     try {
-      const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'summarize', messages: [{ role: 'user', content: prompt }] }),
-      });
-      const j = await r.json();
-      setSheet(j.reply);
+      const text = await callAI({ mode: 'summarize', prompt });
+      setSheet(text);
       window.__a12Toast && window.__a12Toast('Cheatsheet ready!', 'success');
-    } catch (e) { setSheet('Error: ' + e.message); } finally { setLoading(false); }
+    } catch (e) { setSheet(e.message); } finally { setLoading(false); }
   };
 
   const download = () => {

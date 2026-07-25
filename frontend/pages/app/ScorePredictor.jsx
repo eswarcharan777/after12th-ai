@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 export default function ScorePredictor() {
   const [reply, setReply] = useState('');
   const [loading, setLoading] = useState(false);
@@ -7,10 +8,9 @@ export default function ScorePredictor() {
     const scores = JSON.parse(localStorage.getItem('after12th_scores') || '[]');
     const summary = scores.length ? scores.slice(-5).map(s => `${s.exam} ${s.score}/${s.total}`).join('; ') : 'no tests yet';
     try {
-      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: `Based on my recent mock test scores (${summary}), predict my likely AIR/rank in NEET/JEE with detailed reasoning. Give an optimistic and realistic estimate.` }] }) });
-      setReply((await r.json()).reply);
-    } catch (e) { setReply('Error'); } finally { setLoading(false); }
+      const text = await callAI({ mode: 'tutor', prompt: `Based on my recent mock test scores (${summary}), predict my likely AIR/rank in NEET/JEE with detailed reasoning. Give an optimistic and realistic estimate.` });
+      setReply(text);
+    } catch (e) { setReply(e.message); } finally { setLoading(false); }
   };
   return (
     <div className="page-enter" style={{ maxWidth: 800, margin: '0 auto' }}>

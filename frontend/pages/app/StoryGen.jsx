@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 export default function StoryGen() {
   const [story, setStory] = useState(''); const [loading, setLoading] = useState(false);
   const gen = async () => {
@@ -8,10 +9,9 @@ export default function StoryGen() {
     const pomo = JSON.parse(localStorage.getItem('a12_pomo_log') || '[]');
     const total = pomo.reduce((a, p) => a + p.minutes, 0);
     try {
-      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: `Write an inspiring 400-word story about ${user.name || 'a student'}'s ${user.exam || 'NEET'} journey. Data: ${scores.length} mocks, ${Math.floor(total/60)} hours studied. Make it emotional and motivating.` }] }) });
-      setStory((await r.json()).reply);
-    } catch { setStory('Error'); } finally { setLoading(false); }
+      const text = await callAI({ mode: 'tutor', prompt: `Write an inspiring 400-word story about ${user.name || 'a student'}'s ${user.exam || 'NEET'} journey. Data: ${scores.length} mocks, ${Math.floor(total/60)} hours studied. Make it emotional and motivating.` });
+      setStory(text);
+    } catch (e) { setStory(e.message); } finally { setLoading(false); }
   };
   return (
     <div className="page-enter" style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>

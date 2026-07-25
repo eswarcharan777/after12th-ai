@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DeepExplain from '../../components/DeepExplain';
+import { callAI } from '../../lib/callAI';
 
 export default function AdaptivePractice() {
   const [params] = useSearchParams();
@@ -18,15 +19,11 @@ export default function AdaptivePractice() {
     const difficulty = avg > 70 ? 'hard' : avg > 45 ? 'medium' : 'easy';
     const prompt = `Generate 5 ${difficulty} MCQs for NEET/JEE on ${subject} - ${topic}. Match student level (avg score ${Math.round(avg)}%). Adaptive practice.`;
     try {
-      const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'qgen', messages: [{ role: 'user', content: prompt }] }),
-      });
-      const j = await r.json();
-      setQuestions(JSON.parse(j.reply));
+      const parsed = await callAI({ mode: 'qgen', prompt, expectJson: true });
+      setQuestions(parsed);
       window.__a12Toast && window.__a12Toast(`5 ${difficulty} questions ready`, 'success');
     } catch (e) {
-      window.__a12Toast && window.__a12Toast('Load failed', 'error');
+      window.__a12Toast && window.__a12Toast(e.message, 'error');
     } finally { setLoading(false); }
   };
 

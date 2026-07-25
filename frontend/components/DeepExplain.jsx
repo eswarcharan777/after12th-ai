@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../lib/callAI';
 
 const CACHE_KEY = 'after12th_deep_explain_cache';
 
@@ -29,20 +30,13 @@ export default function DeepExplain({ q, userAnswer }) {
         chapter: q.chapter,
         baseExplanation: q.explanation,
       };
-      const r = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'explain', messages: [{ role: 'user', content: JSON.stringify(payload) }] }),
-      });
-      const j = await r.json();
-      const reply = (j.reply || '').trim();
-      if (!reply) throw new Error('empty');
+      const reply = await callAI({ mode: 'explain', prompt: JSON.stringify(payload) });
       setDeep(reply);
       const c = readCache();
       c[cacheKey] = reply;
       writeCache(c);
     } catch (e) {
-      setErr('Could not load deeper explanation. Try again.');
+      setErr(e.message);
     } finally { setLoading(false); }
   };
 

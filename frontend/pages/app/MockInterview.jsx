@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 export default function MockInterview() {
   const [history, setHistory] = useState([{ role: 'assistant', content: 'Welcome! Tell me — what college are you interviewing for and what stream?' }]);
   const [input, setInput] = useState(''); const [loading, setLoading] = useState(false);
@@ -6,10 +7,9 @@ export default function MockInterview() {
     if (!input.trim()) return;
     const upd = [...history, { role: 'user', content: input }]; setHistory(upd); setInput(''); setLoading(true);
     try {
-      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: 'You are a college admissions interviewer for Indian institutes. Ask tough but fair interview questions one at a time based on the student\'s answers. After each answer, briefly rate (1-10) and ask the next question.' }, ...upd] }) });
-      setHistory([...upd, { role: 'assistant', content: (await r.json()).reply }]);
-    } catch { setHistory([...upd, { role: 'assistant', content: 'Error, try again' }]); } finally { setLoading(false); }
+      const reply = await callAI({ mode: 'tutor', messages: [{ role: 'user', content: 'You are a college admissions interviewer for Indian institutes. Ask tough but fair interview questions one at a time based on the student\'s answers. After each answer, briefly rate (1-10) and ask the next question.' }, ...upd] });
+      setHistory([...upd, { role: 'assistant', content: reply }]);
+    } catch (e) { setHistory([...upd, { role: 'assistant', content: e.message }]); } finally { setLoading(false); }
   };
   return (
     <div className="page-enter" style={{ maxWidth: 800, margin: '0 auto' }}>

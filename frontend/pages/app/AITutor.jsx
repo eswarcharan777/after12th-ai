@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PersonaPicker from '../../components/PersonaPicker';
+import { callAI } from '../../lib/callAI';
 
 const suggestions = [
   "Explain Newton's laws of motion for NEET",
@@ -137,14 +138,11 @@ export default function AITutor() {
     setMessages(updated);
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', persona: localStorage.getItem('a12_persona') || 'friendly', messages: updated.map(m => ({ role: m.role, content: m.content })) }),
+      const reply = await callAI({
+        mode: 'tutor',
+        persona: localStorage.getItem('a12_persona') || 'friendly',
+        messages: updated.map(m => ({ role: m.role, content: m.content })),
       });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      const reply = data.reply;
       const next = [...updated, { role: 'assistant', content: reply }];
       setMessages(next);
       if (autoSpeak) setTimeout(() => speak(reply, next.length - 1), 250);

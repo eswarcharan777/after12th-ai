@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { savePlan, loadUserData } from '../../userdata';
 import Reveal from '../../components/Reveal';
+import { callAI } from '../../lib/callAI';
 
 const subjectsByExam = {
   NEET: ['Physics', 'Chemistry', 'Biology'],
@@ -28,16 +29,14 @@ export default function StudyPlanner() {
     setLoading(true); setPlan(null);
     const daysLeft = Math.ceil((new Date(form.examDate) - new Date()) / (1000 * 60 * 60 * 24));
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'planner', messages: [{ role: 'user', content: `Create a study plan for:\n- Exam: ${exam}\n- Exam date: ${form.examDate} (${daysLeft} days from now)\n- Current level: ${form.level}\n- Weak subjects: ${form.weakSubjects.join(', ') || 'None specified'}\n- Available study hours per day: ${form.hoursPerDay} hours\n- Subjects to cover: ${subjects.join(', ')}\n\nGenerate a realistic weekly plan for the first 2 weeks, with daily subject distribution.` }] })
+      const parsed = await callAI({
+        mode: 'planner',
+        prompt: `Create a study plan for:\n- Exam: ${exam}\n- Exam date: ${form.examDate} (${daysLeft} days from now)\n- Current level: ${form.level}\n- Weak subjects: ${form.weakSubjects.join(', ') || 'None specified'}\n- Available study hours per day: ${form.hoursPerDay} hours\n- Subjects to cover: ${subjects.join(', ')}\n\nGenerate a realistic weekly plan for the first 2 weeks, with daily subject distribution.`,
+        expectJson: true,
       });
-      const data = await res.json();
-      let parsed;
-      try { parsed = JSON.parse(data.reply); }
-      catch { parsed = { overview: data.reply, weeklyPlan: [], tips: [], milestones: [] }; }
       setPlan(parsed); savePlan(parsed);
-    } catch {
+    } catch (err) {
+      window.__a12Toast && window.__a12Toast(err.message, 'error');
       setPlan({
         overview: 'Could not connect to AI. Please check your server setup and API key.',
         weeklyPlan: [{ week: 1, theme: 'Foundation Building', days: [

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { callAI } from '../../lib/callAI';
 
 export default function PhotoDoubt() {
   const [image, setImage] = useState(null);
@@ -27,15 +28,16 @@ export default function PhotoDoubt() {
     if (!image) { window.__a12Toast && window.__a12Toast('Upload a photo first', 'warn'); return; }
     setLoading(true); setReply('');
     try {
-      const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'photo', image, messages: [{ role: 'user', content: question }] })
+      const text = await callAI({
+        mode: 'photo',
+        image,
+        messages: [{ role: 'user', content: question }],
+        timeoutMs: 60_000, // vision requests are slower
       });
-      const j = await r.json();
-      setReply(j.reply || j.error || 'No response');
+      setReply(text);
       window.__a12Toast && window.__a12Toast('Solved! 📸', 'success');
     } catch (e) {
-      setReply('Error: ' + e.message);
+      setReply(e.message);
     } finally { setLoading(false); }
   };
 

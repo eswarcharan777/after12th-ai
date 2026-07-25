@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { colleges } from '../../data/colleges';
 import Reveal from '../../components/Reveal';
+import { callAI } from '../../lib/callAI';
 
 const allStates = [...new Set(colleges.map(c => c.state))].sort();
 
@@ -27,14 +28,13 @@ export default function CollegeFinder() {
     if (!rank) return;
     setAiLoading(true);
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'college', messages: [{ role: 'user', content: `My predicted rank is ${rank} in ${filters.exam === 'NEET' ? 'NEET' : 'JEE Main'}. Category: ${filters.category}. State preference: ${filters.state === 'ALL' ? 'Any state in India' : filters.state}. Fees budget: ₹${(filters.maxFees / 100000).toFixed(1)}L/year. Please recommend top 6 colleges for me.` }] })
+      const parsed = await callAI({
+        mode: 'college',
+        prompt: `My predicted rank is ${rank} in ${filters.exam === 'NEET' ? 'NEET' : 'JEE Main'}. Category: ${filters.category}. State preference: ${filters.state === 'ALL' ? 'Any state in India' : filters.state}. Fees budget: ₹${(filters.maxFees / 100000).toFixed(1)}L/year. Please recommend top 6 colleges for me.`,
+        expectJson: true,
       });
-      const data = await res.json();
-      try { setAiResult(JSON.parse(data.reply)); } catch { setAiResult({ message: data.reply, shortlist: [] }); }
-    } catch { setAiResult({ message: 'Could not connect to AI. Please check server.', shortlist: [] }); }
+      setAiResult(parsed);
+    } catch (err) { setAiResult({ message: err.message, shortlist: [] }); }
     finally { setAiLoading(false); }
   };
 

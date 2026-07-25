@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 
 export default function Roadmap() {
   const [exam, setExam] = useState('NEET');
@@ -13,15 +14,11 @@ export default function Roadmap() {
     setLoading(true); setPlan(null);
     const prompt = `Target: ${exam}. Level: ${level}. Time available: ${months} months. Daily study hours: ${hours}. Weak areas: ${weak}. Build my complete personalized roadmap.`;
     try {
-      const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'roadmap', messages: [{ role: 'user', content: prompt }] })
-      });
-      const j = await r.json();
-      setPlan(JSON.parse(j.reply));
+      const parsed = await callAI({ mode: 'roadmap', prompt, expectJson: true });
+      setPlan(parsed);
       window.__a12Toast && window.__a12Toast('Roadmap ready 🗺️', 'success');
     } catch (e) {
-      window.__a12Toast && window.__a12Toast('Roadmap failed — retry', 'error');
+      window.__a12Toast && window.__a12Toast(e.message, 'error');
     } finally { setLoading(false); }
   };
 

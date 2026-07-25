@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 
 export default function NoteSummarizer() {
   const [input, setInput] = useState('');
@@ -9,14 +10,10 @@ export default function NoteSummarizer() {
     if (input.trim().length < 40) { window.__a12Toast && window.__a12Toast('Paste more content first', 'warn'); return; }
     setLoading(true); setSummary('');
     try {
-      const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'summarize', messages: [{ role: 'user', content: input }] })
-      });
-      const j = await r.json();
-      setSummary(j.reply || j.error);
+      const text = await callAI({ mode: 'summarize', prompt: input });
+      setSummary(text);
       window.__a12Toast && window.__a12Toast('Notes ready!', 'success');
-    } catch (e) { setSummary('Error: ' + e.message); }
+    } catch (e) { setSummary(e.message); }
     finally { setLoading(false); }
   };
 

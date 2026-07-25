@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Reveal from '../../components/Reveal';
 import AnimatedNumber from '../../components/AnimatedNumber';
+import { callAI } from '../../lib/callAI';
 
 const questions = [
   { q: 'What subject excites you the most?', opts: ['Physics & Engineering', 'Biology & Life Sciences', 'Mathematics & Logic', 'Chemistry & Research', 'All equally'] },
@@ -24,12 +25,10 @@ export default function BranchGuide() {
     setLoading(true);
     try {
       const prompt = `Student quiz answers:\n${questions.map((q, i) => `Q${i + 1}: ${q.q}\nAnswer: ${updated[i]}`).join('\n\n')}\n\nBased on these answers, recommend the best branch/career for this student.`;
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'branch', messages: [{ role: 'user', content: prompt }] }) });
-      const data = await res.json();
-      try { setResult(JSON.parse(data.reply)); }
-      catch { setResult({ topBranch: 'CSE', reason: data.reply, branches: [{ name: 'CSE', match: 85, scope: 'Very High', avgSalary: '12-25 LPA', description: 'Computer Science Engineering' }], careerPaths: ['Software Engineer', 'Data Scientist'], message: data.reply }); }
-    } catch {
-      setResult({ topBranch: 'CSE', reason: 'Based on your answers, CSE seems like a strong match.', branches: [{ name: 'CSE', match: 85, scope: 'Very High', avgSalary: '12-25 LPA', description: 'Computer Science - strong job market, high salaries.' }], careerPaths: ['Software Engineer', 'Data Scientist', 'Product Manager'], message: 'Could not connect to AI. Please check your server setup.' });
+      const parsed = await callAI({ mode: 'branch', prompt, expectJson: true });
+      setResult(parsed);
+    } catch (err) {
+      setResult({ topBranch: 'CSE', reason: err.message, branches: [{ name: 'CSE', match: 85, scope: 'Very High', avgSalary: '12-25 LPA', description: 'Sample fallback — backend may be waking up.' }], careerPaths: ['Software Engineer'], message: err.message });
     }
     setPhase('result');
     setLoading(false);

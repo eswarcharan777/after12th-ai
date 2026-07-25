@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 export default function SOPWriter() {
   const [f, setF] = useState({ name: '', program: 'MS Computer Science', school: 'MIT', achievements: '', goals: '' });
   const [sop, setSop] = useState(''); const [loading, setLoading] = useState(false);
   const go = async () => {
     setLoading(true);
     try {
-      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: `Write a compelling 600-word Statement of Purpose for ${f.name} applying to ${f.program} at ${f.school}. Achievements: ${f.achievements}. Career goals: ${f.goals}. Use strong opening hook, specific stories, and end with why this school.` }] }) });
-      setSop((await r.json()).reply);
-    } catch { setSop('Error'); } finally { setLoading(false); }
+      const text = await callAI({ mode: 'tutor', prompt: `Write a compelling 600-word Statement of Purpose for ${f.name} applying to ${f.program} at ${f.school}. Achievements: ${f.achievements}. Career goals: ${f.goals}. Use strong opening hook, specific stories, and end with why this school.` });
+      setSop(text);
+    } catch (e) { setSop(e.message); } finally { setLoading(false); }
   };
   const inp = { width: '100%', padding: 10, marginBottom: 10, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' };
   return (

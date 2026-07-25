@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { callAI } from '../../lib/callAI';
 
 const SR = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
 const TTS = typeof window !== 'undefined' && 'speechSynthesis' in window;
@@ -44,16 +45,11 @@ export default function VoiceChat() {
     const newHistory = [...history, { role: 'user', content: text }];
     setHistory(newHistory);
     try {
-      const r = await fetch('/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', persona, messages: newHistory })
-      });
-      const j = await r.json();
-      const answer = j.reply || 'Sorry, could not understand.';
+      const answer = await callAI({ mode: 'tutor', persona, messages: newHistory });
       setReply(answer);
       setHistory([...newHistory, { role: 'assistant', content: answer }]);
       speak(answer.slice(0, 500));
-    } catch (e) { setReply('Error: ' + e.message); }
+    } catch (e) { setReply(e.message); }
   };
 
   useEffect(() => () => window.speechSynthesis && window.speechSynthesis.cancel(), []);

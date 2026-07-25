@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 export default function ConceptArticles() {
   const [topic, setTopic] = useState('Photosynthesis');
   const [article, setArticle] = useState(''); const [loading, setLoading] = useState(false);
   const go = async () => {
     setLoading(true);
     try {
-      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: `Write a comprehensive but simple 500-word article explaining ${topic} for a Class 12 NEET/JEE student. Include: definition, key mechanisms, real-world examples, common exam mistakes, and 3 practice questions.` }] }) });
-      setArticle((await r.json()).reply);
-    } catch { setArticle('Error'); } finally { setLoading(false); }
+      const text = await callAI({ mode: 'tutor', prompt: `Write a comprehensive but simple 500-word article explaining ${topic} for a Class 12 NEET/JEE student. Include: definition, key mechanisms, real-world examples, common exam mistakes, and 3 practice questions.` });
+      setArticle(text);
+    } catch (e) { setArticle(e.message); } finally { setLoading(false); }
   };
   return (
     <div className="page-enter" style={{ maxWidth: 800, margin: '0 auto' }}>

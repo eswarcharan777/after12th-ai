@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { callAI } from '../../lib/callAI';
 export default function MistakeAnalysis() {
   const [reply, setReply] = useState(''); const [loading, setLoading] = useState(false);
   const go = async () => {
     setLoading(true);
     const scores = JSON.parse(localStorage.getItem('after12th_scores') || '[]');
     try {
-      const r = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: `Analyze my common NEET/JEE mistakes based on my score history: ${JSON.stringify(scores.slice(-10))}. Identify 3-5 patterns and give me specific corrections.` }] }) });
-      setReply((await r.json()).reply);
-    } catch { setReply('Error'); } finally { setLoading(false); }
+      const text = await callAI({ mode: 'tutor', prompt: `Analyze my common NEET/JEE mistakes based on my score history: ${JSON.stringify(scores.slice(-10))}. Identify 3-5 patterns and give me specific corrections.` });
+      setReply(text);
+    } catch (e) { setReply(e.message); } finally { setLoading(false); }
   };
   return (
     <div className="page-enter" style={{ maxWidth: 800, margin: '0 auto' }}>
