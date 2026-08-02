@@ -1,0 +1,37 @@
+# ═══════════════════════════════════════════════════════════════════
+# Keep-alive ping for the Render backend.
+# Render's free tier sleeps a service after ~15 min of inactivity, and
+# the cold restart takes 30-60s. We ping every 10 min so the dyno stays
+# awake and every real user request is instant.
+# ═══════════════════════════════════════════════════════════════════
+
+name: Keep backend awake
+
+on:
+  schedule:
+    # Every 10 minutes. GitHub Actions may delay by a few minutes under
+    # load — 10 min gives a healthy margin below Render's 15 min sleep.
+    - cron: '*/10 * * * *'
+  workflow_dispatch:  # allow manual trigger from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping backend
+        run: |
+          echo "Pinging Render backend to keep it awake..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 90 \
+            -X POST https://after12th-ai.onrender.com/api/chat \
+            -H "Content-Type: application/json" \
+            -d '{"mode":"tutor","messages":[{"role":"user","content":"ping"}]}')
+          echo "HTTP status: $RESPONSE"
+          # Any 2xx/3xx counts as awake. 401/403/429 also mean the server is up.
+          if [[ "$RESPONSE" =~ ^(2|3|4)[0-9][0-9]$ ]]; then
+            echo "✅ Backend is awake."
+          else
+            echo "⚠️  Unexpected response — backend may be down."
+            exit 1
+          fi
