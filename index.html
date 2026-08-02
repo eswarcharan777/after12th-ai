@@ -195,19 +195,27 @@
 <div id="a12BootHome"><div class="l">🎓</div><div class="t">After12th <em>AI</em></div><div class="b"></div></div>
 <script>
 (function(){
+  // ── STEP 1: If a service worker is controlling this page, it may be serving
+  //           a stale React shell instead of this static landing page. Unregister
+  //           it and hard-reload once so the user gets fresh HTML from the server.
+  if('serviceWorker' in navigator && navigator.serviceWorker.controller && !sessionStorage.getItem('a12_sw_nuked')){
+    sessionStorage.setItem('a12_sw_nuked','1');
+    navigator.serviceWorker.getRegistrations().then(function(rs){
+      Promise.all(rs.map(function(r){return r.unregister()})).then(function(){
+        // Also wipe caches populated by the old SW.
+        if('caches' in window){caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k)})})}
+        setTimeout(function(){window.location.reload()},50);
+      });
+    });
+    return; // don't run the loader hide logic — we're about to reload
+  }
   var removed=false;
   function hide(){if(removed)return;removed=true;var b=document.getElementById('a12BootHome');if(!b)return;b.classList.add('gone');setTimeout(function(){b&&b.parentNode&&b.parentNode.removeChild(b)},400)}
   function hasContent(){var h=document.querySelector('header'),hero=document.querySelector('.hero');return (h&&h.offsetHeight>10)||(hero&&hero.offsetHeight>50)}
   function tryHide(){if(hasContent())hide();else setTimeout(tryHide,120)}
-  // Wait for real content to appear before removing the loader — never leave a blank screen.
   if(document.readyState==='complete')tryHide();
   else window.addEventListener('load',tryHide);
-  // Absolute safety cap: 6s. If nothing rendered by then, remove loader so user isn't stuck.
   setTimeout(hide,6000);
-  // Kick any stale service worker so the next click gets the fresh bundle.
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.update()})});
-  }
 })();
 </script>
 <div class="tri"></div>

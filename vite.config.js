@@ -37,6 +37,12 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallback: '/app.html',
+        // CRITICAL: only apply the SPA fallback to /app/* routes.
+        // Without this the SW hijacked '/', '/neet', '/jee' etc. and served the cached
+        // React shell instead of the real static landing pages — which is why the
+        // homepage kept going blank on cold reloads.
+        navigateFallbackAllowlist: [/^\/app(\/|$)/, /^\/login$/],
+        navigateFallbackDenylist: [/^\/api\//, /^\/[^/]+\.html$/, /^\/blog\//, /\.[a-z0-9]+$/i],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
