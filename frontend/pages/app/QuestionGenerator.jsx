@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { getExam, getSubjects, safeSubject } from '../../lib/subjects';
 
 export default function QuestionGenerator() {
-  const [subject, setSubject] = useState('Physics');
+  const userExam = getExam();
+  const subjects = getSubjects(userExam);
+  const [subject, setSubject] = useState(subjects[0]);
   const [topic, setTopic] = useState('Kinematics');
   const [count, setCount] = useState(5);
   const [difficulty, setDifficulty] = useState('medium');
-  const [exam, setExam] = useState('NEET');
+  const [exam] = useState(userExam);
   const [questions, setQuestions] = useState(null);
   const [answers, setAnswers] = useState({});
   const [showAll, setShowAll] = useState(false);
@@ -58,13 +61,13 @@ export default function QuestionGenerator() {
 
       <div className="glass" style={{ padding: 24, borderRadius: 16, marginBottom: 20, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
         <label>Exam
-          <select value={exam} onChange={(e) => setExam(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
-            <option>NEET</option><option>JEE</option>
-          </select>
+          <div style={{ width: '100%', padding: 10, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+            {exam === 'NEET' ? '🩺 NEET-UG' : '⚙️ JEE Main'}
+          </div>
         </label>
         <label>Subject
-          <select value={subject} onChange={(e) => setSubject(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
-            <option>Physics</option><option>Chemistry</option><option>Biology</option><option>Maths</option>
+          <select value={safeSubject(subject, exam)} onChange={(e) => setSubject(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+            {subjects.map(s => <option key={s}>{s}</option>)}
           </select>
         </label>
         <label>Topic

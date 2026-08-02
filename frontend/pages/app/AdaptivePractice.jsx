@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import DeepExplain from '../../components/DeepExplain';
 import { callAI } from '../../lib/callAI';
+import { getSubjects, safeSubject } from '../../lib/subjects';
 
 export default function AdaptivePractice() {
   const [params] = useSearchParams();
@@ -39,8 +40,8 @@ export default function AdaptivePractice() {
       <p style={{ color: 'var(--text-dim)', marginBottom: 20 }}>AI picks questions targeting your weaknesses.</p>
 
       <div className="glass" style={{ padding: 14, borderRadius: 12, marginBottom: 16, display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <select value={subject} onChange={e => setSubject(e.target.value)} style={inp}>
-          <option>Physics</option><option>Chemistry</option><option>Biology</option><option>Maths</option>
+        <select value={safeSubject(subject)} onChange={e => setSubject(e.target.value)} style={inp}>
+          {getSubjects().map(s => <option key={s}>{s}</option>)}
         </select>
         <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic" style={{ ...inp, flex: 1, minWidth: 160 }} />
         <button className="btn-outline" onClick={fetchQuestions} disabled={loading}>{loading ? 'Loading...' : 'Load'}</button>

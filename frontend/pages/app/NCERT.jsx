@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
+import { getExam } from '../../lib/subjects';
 
-const CHAPTERS = {
+const ALL_CHAPTERS = {
   Physics: ['Motion in a Plane', 'Laws of Motion', 'Work Energy Power', 'Gravitation', 'Thermodynamics', 'Waves', 'Electric Charges', 'Current Electricity', 'Magnetism', 'Optics', 'Modern Physics'],
   Chemistry: ['Some Basic Concepts', 'Structure of Atom', 'Chemical Bonding', 'States of Matter', 'Thermodynamics', 'Equilibrium', 'Redox', 'Organic Basics', 'Hydrocarbons', 'Environmental Chem'],
   Biology: ['Living World', 'Biological Classification', 'Plant Kingdom', 'Animal Kingdom', 'Cell Structure', 'Biomolecules', 'Cell Cycle', 'Photosynthesis', 'Respiration', 'Reproduction', 'Genetics', 'Evolution', 'Ecology'],
+  Maths: ['Sets & Relations', 'Trigonometry', 'Complex Numbers', 'Sequences & Series', 'Permutations & Combinations', 'Binomial Theorem', 'Straight Lines', 'Conic Sections', 'Limits & Derivatives', 'Statistics', 'Probability', 'Matrices & Determinants', 'Integration', 'Differential Equations', 'Vectors & 3D Geometry'],
 };
+// NEET → Physics/Chemistry/Biology · JEE → Physics/Chemistry/Maths
+const CHAPTERS = (() => {
+  const exam = getExam();
+  const subs = exam === 'JEE' ? ['Physics', 'Chemistry', 'Maths'] : ['Physics', 'Chemistry', 'Biology'];
+  return Object.fromEntries(subs.map(s => [s, ALL_CHAPTERS[s]]));
+})();
 
 export default function NCERT() {
   const [active, setActive] = useState(null); // { sub, ch }
