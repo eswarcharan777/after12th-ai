@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, Outlet, Navigate } from 'react-router-d
 import { auth, isFirebaseConfigured, signOut } from '../../firebase';
 import XPBar from '../../components/XPBar';
 import ExamPicker from '../../components/ExamPicker';
+import { warmupAI } from '../../lib/callAI';
 
 const nav = [
   { to: '/app/dashboard', icon: '📊', label: 'Dashboard' },
@@ -98,6 +99,9 @@ export default function AppLayout() {
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 900);
     window.addEventListener('resize', onResize);
+    // Wake the sleeping Render dyno the moment the app opens — by the time
+    // the user clicks Generate/Ask/Build, the backend is already warm.
+    warmupAI();
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
@@ -200,8 +204,20 @@ export default function AppLayout() {
         <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ fontSize: 12, color: 'var(--text-faint)', marginBottom: 6, letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 600 }}>Welcome back</div>
           <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>{user.name}</div>
-          <div className="badge badge-violet" style={{ marginTop: 8, fontSize: 10 }}>
-            {user.exam || 'NEET'} Aspirant
+          <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <div className="badge badge-violet" style={{ fontSize: 10 }}>
+              {user.exam || 'NEET'} Aspirant
+            </div>
+            <button
+              onClick={() => window.__a12OpenExamPicker && window.__a12OpenExamPicker()}
+              title="Switch between NEET and JEE"
+              style={{
+                fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 999,
+                background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)',
+                color: 'var(--text-mid)', cursor: 'pointer', letterSpacing: 0.4, textTransform: 'uppercase',
+              }}>
+              ⇅ Change
+            </button>
           </div>
         </div>
 
