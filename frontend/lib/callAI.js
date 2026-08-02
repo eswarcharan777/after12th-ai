@@ -4,8 +4,33 @@
 // clear error handling across the whole app.
 // ═══════════════════════════════════════════════════════════════════
 
-const DEFAULT_TIMEOUT_MS = 60_000;   // 60s covers Render cold start + Gemini generation
-const JSON_TIMEOUT_MS    = 75_000;   // JSON-heavy prompts need a bit more headroom
+const DEFAULT_TIMEOUT_MS = 90_000;   // 90s — covers worst-case Render cold start + Gemini generation
+const JSON_TIMEOUT_MS    = 90_000;   // JSON modes get the full 90s too
+const WARMUP_TIMEOUT_MS  = 45_000;   // silent warmup fires on app open
+
+// Fire-and-forget warmup — wakes the sleeping Render dyno so the user's
+// first real click doesn't hit a 30-60s cold start.
+let warmupInFlight = false;
+let warmupDone = false;
+export function warmupAI() {
+  if (warmupDone || warmupInFlight) return;
+  warmupInFlight = true;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), WARMUP_TIMEOUT_MS);
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'tutor', messages: [{ role: 'user', content: 'ping' }] }),
+    signal: ctrl.signal,
+  }).then(r => {
+    clearTimeout(timer);
+    warmupInFlight = false;
+    if (r.ok) warmupDone = true;
+  }).catch(() => {
+    clearTimeout(timer);
+    warmupInFlight = false;
+  });
+}
 
 function friendlyError(e) {
   if (e.name === 'AbortError') {
@@ -77,16 +102,7 @@ function extractJson(raw) {
   throw new Error('bad-json');
 }
 
-export async function callAI({
-  mode,
-  prompt,
-  messages,
-  image,
-  persona,
-  timeoutMs,
-  expectJson = false,
-}) {
-  const ms = timeoutMs || (expectJson ? JSON_TIMEOUT_MS : DEFAULT_TIMEOUT_MS);
+async function doFetch({ mode, prompt, messages, image, persona, expectJson, ms }) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ms);
 
@@ -116,10 +132,48 @@ export async function callAI({
 
     if (!expectJson) return stripFences(reply);
     return extractJson(reply);
-  } catch (e) {
+  } finally {
     clearTimeout(timer);
-    // Log actual failure to console so we can debug from browser DevTools.
-    console.error('[callAI]', mode, e);
-    throw friendlyError(e);
+  }
+}
+
+// Errors that are worth retrying once (network / cold-start / server flap).
+// Bad-input errors (bad-json, empty) should NOT retry.
+function isTransient(err) {
+  if (err.name === 'AbortError') return true;
+  if (/failed to fetch|network|load failed/i.test(err.message || '')) return true;
+  if (err.message?.startsWith('HTTP 5')) return true;
+  if (err.message?.startsWith('HTTP 429')) return true;
+  return false;
+}
+
+export async function callAI({
+  mode,
+  prompt,
+  messages,
+  image,
+  persona,
+  timeoutMs,
+  expectJson = false,
+}) {
+  const ms = timeoutMs || (expectJson ? JSON_TIMEOUT_MS : DEFAULT_TIMEOUT_MS);
+  const args = { mode, prompt, messages, image, persona, expectJson, ms };
+
+  try {
+    return await doFetch(args);
+  } catch (firstErr) {
+    if (!isTransient(firstErr)) {
+      console.error('[callAI]', mode, firstErr);
+      throw friendlyError(firstErr);
+    }
+    // Auto-retry once after a short delay — usually clears the cold-start hiccup.
+    console.warn('[callAI] transient error, retrying once:', mode, firstErr.message);
+    await new Promise(res => setTimeout(res, 1500));
+    try {
+      return await doFetch(args);
+    } catch (secondErr) {
+      console.error('[callAI] retry also failed:', mode, secondErr);
+      throw friendlyError(secondErr);
+    }
   }
 }
