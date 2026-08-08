@@ -2,6 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import PersonaPicker from '../../components/PersonaPicker';
 import { callAI } from '../../lib/callAI';
 
+const iconBtn = {
+  width: 34, height: 34, borderRadius: 10,
+  background: 'rgba(255,255,255,0.05)',
+  border: '1px solid var(--border)',
+  color: 'var(--text)',
+  cursor: 'pointer', fontSize: 16,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  flexShrink: 0,
+};
+
 const suggestions = [
   "Explain Newton's laws of motion for NEET",
   "What is the difference between speed and velocity?",
@@ -174,47 +184,65 @@ export default function AITutor() {
     </div>
   );
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [currentPersona, setCurrentPersona] = useState(() => localStorage.getItem('a12_persona') || 'friendly');
+  const setPersona = (p) => { setCurrentPersona(p); localStorage.setItem('a12_persona', p); };
+
+  const newChat = () => {
+    window.speechSynthesis?.cancel();
+    setMessages([{ role: 'assistant', content: `Namaste! New chat started. What would you like to learn today? 😊` }]);
+    setSettingsOpen(false);
+  };
+
   return (
-    <div className="page-enter" style={{ height: 'calc(100vh - 130px)', display: 'flex', flexDirection: 'column' }}>
-      <PersonaPicker />
-      {/* Header */}
-      <div className="glass" style={{ padding: '16px 22px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14, borderRadius: 16, flexWrap: 'wrap' }}>
-        <div style={{ width: 46, height: 46, borderRadius: '50%', background: 'var(--aurora)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, boxShadow: 'var(--glow-violet)' }}>🤖</div>
-        <div style={{ flex: 1, minWidth: 180 }}>
-          <div style={{ fontFamily: 'Sora', fontWeight: 700, fontSize: 16, color: 'var(--text)' }}>After12th AI Tutor</div>
-          <div style={{ fontSize: 12, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 10px var(--green)' }} />
-            Online · 🎤 Voice + 💬 Text
+    <div className="page-enter" style={{ height: 'calc(100vh - 110px)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Compact top bar — everything collapsed into one row */}
+      <div className="glass" style={{ padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 10, borderRadius: 12 }}>
+        <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--aurora)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, boxShadow: 'var(--glow-violet)', flexShrink: 0 }}>🤖</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontFamily: 'Sora', fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>AI Tutor</div>
+          <div style={{ fontSize: 10, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)' }} />
+            Online · {currentPersona}
           </div>
         </div>
-        <VoiceControls />
-        <button onClick={() => { window.speechSynthesis?.cancel(); setMessages([{ role: 'assistant', content: `Namaste! New chat started. What would you like to learn today? 😊` }]); }}
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', borderRadius: 10, padding: '8px 16px', fontSize: 13, color: 'var(--text-mid)', cursor: 'pointer' }}>
-          New Chat
-        </button>
+        <button onClick={newChat} title="Start new chat" style={iconBtn}>✨</button>
+        <button onClick={() => setSettingsOpen(o => !o)} title="Chat settings" style={{ ...iconBtn, background: settingsOpen ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)' }}>⚙️</button>
       </div>
 
-      {/* Suggestions */}
-      {messages.length <= 1 && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 12, color: 'var(--text-dim)', marginBottom: 10, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>Try asking:</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {suggestions.map((s, i) => (
-              <button key={s} onClick={() => send(s)} style={{
-                background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: 22,
-                padding: '8px 16px', fontSize: 12, color: 'var(--text-mid)', cursor: 'pointer',
-                transition: 'all 0.25s', animation: `fadeUp 0.45s ${i * 50}ms backwards`,
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--violet)'; e.currentTarget.style.color = 'var(--text)'; e.currentTarget.style.boxShadow = '0 4px 18px rgba(139,92,246,0.3)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-mid)'; e.currentTarget.style.boxShadow = 'none'; }}
-              >{s}</button>
-            ))}
-          </div>
+      {/* Collapsible settings drawer — only visible when ⚙️ tapped */}
+      {settingsOpen && (
+        <div className="glass" style={{ padding: 14, borderRadius: 12, display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ fontSize: 11, color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Persona</div>
+          {[{ k: 'friendly', l: '😊 Friendly' }, { k: 'strict', l: '🧐 Strict' }, { k: 'motivational', l: '🔥 Motivator' }, { k: 'chill', l: '😎 Chill' }].map(p => (
+            <button key={p.k} onClick={() => setPersona(p.k)}
+              style={{
+                fontSize: 12, padding: '5px 10px', borderRadius: 999, cursor: 'pointer',
+                background: currentPersona === p.k ? 'var(--aurora)' : 'rgba(255,255,255,0.04)',
+                color: currentPersona === p.k ? '#fff' : 'var(--text-mid)',
+                border: currentPersona === p.k ? '1px solid transparent' : '1px solid var(--border)',
+              }}>{p.l}</button>
+          ))}
+          <VoiceControls />
         </div>
       )}
 
-      {/* Chat Messages */}
-      <div className="glass" style={{ flex: 1, overflowY: 'auto', padding: 22, borderRadius: 16 }}>
+      {/* Chat Messages — takes ALL remaining vertical space */}
+      <div className="glass" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: 18, borderRadius: 12 }}>
+        {messages.length <= 1 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, color: 'var(--text-dim)', marginBottom: 8, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase' }}>Try asking:</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {suggestions.map((s) => (
+                <button key={s} onClick={() => send(s)} style={{
+                  background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: 22,
+                  padding: '6px 12px', fontSize: 11, color: 'var(--text-mid)', cursor: 'pointer',
+                }}>{s}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {messages.map((m, i) => (
           <Message key={i} msg={m} onSpeak={(t) => speak(t, i)} speaking={speakingIdx === i} />
         ))}
