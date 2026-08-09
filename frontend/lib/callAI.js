@@ -42,11 +42,18 @@ function friendlyError(e) {
   if (e.message === 'bad-json') {
     return new Error('AI returned an unexpected format. Try a simpler input and retry.');
   }
+  if (/failed to fetch|network|load failed/i.test(e.message || '')) {
+    return new Error('Network error. Check your internet and retry.');
+  }
+  // If the error already carries a Gemini-specific message (rate limit,
+  // model not found, safety block, etc.), pass it straight through so the
+  // user sees the actual reason instead of a masked generic one.
+  if (e.message?.startsWith('Gemini ') || e.message?.includes('quota') ||
+      e.message?.includes('SAFETY') || e.message?.includes('API key')) {
+    return new Error(e.message);
+  }
   if (e.message?.startsWith('HTTP ')) {
     return new Error(`Backend returned ${e.message}. Try again in ~15 seconds.`);
-  }
-  if (/failed to fetch|network/i.test(e.message || '')) {
-    return new Error('Network error. Check your internet and retry.');
   }
   return new Error('Could not reach the AI. The backend may be waking up — retry in ~15 seconds.');
 }
@@ -122,9 +129,17 @@ async function doFetch({ mode, prompt, messages, image, persona, expectJson, ms 
     });
     clearTimeout(timer);
 
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    // Read the JSON body FIRST — even on 4xx/5xx the server sends a helpful
+    // { error: "..." } we want to surface to the user (e.g. Gemini quota / model / key errors).
+    let j = {};
+    try { j = await r.json(); } catch {}
 
-    const j = await r.json();
+    if (!r.ok) {
+      const detail = j.error ? String(j.error) : `HTTP ${r.status}`;
+      const err = new Error(detail);
+      err.status = r.status;
+      throw err;
+    }
     if (j.error) throw new Error(j.error);
 
     const reply = String(j.reply || '').trim();
