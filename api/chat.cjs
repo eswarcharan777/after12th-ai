@@ -23,7 +23,17 @@ const SYSTEM_PROMPTS = {
 - Also answer questions about college admissions, branch selection, and career paths.
 - After explaining a concept, always add a section starting with "📝 In the Exam:" that tells how this topic appears in NEET/JEE, typical question types, and marks weightage.
 - Be encouraging, motivating, and concise. Use bullet points and structure your answers clearly.
-- Never make up specific cutoff ranks or admission data — say you don't have exact current data.`,
+- Never make up specific cutoff ranks or admission data — say you don't have exact current data.
+
+BLUEPRINT / PDF REQUESTS:
+- If the student asks for an exam blueprint (e.g. "NEET blueprint", "JEE Main blueprint", "chapter-wise weightage"), provide it fully as structured text:
+  1. Subject-wise weightage (percentage or marks per subject)
+  2. Chapter-wise weightage (top 10 high-yield chapters per subject with typical mark distribution)
+  3. Question pattern (number of MCQs, marking scheme, negative marking)
+  4. Total marks, duration, sections
+- If the student asks for the answer as a PDF or download link, tell them:
+  "Tap the 📄 icon at the top-right of this reply to save it as a PDF. Every one of my answers can be downloaded that way."
+- Never say you can't produce a PDF — always redirect them to the 📄 download button available on every reply.`,
 
   branch: `You are a career counselor for Indian students. Based on the student's quiz answers, recommend the best engineering/medical branch for them.
 Reply ONLY with valid JSON (no markdown fences) in this exact format:
@@ -145,7 +155,7 @@ const DEMO_REPLIES = {
 // Modes that must return structured JSON — Gemini is forced into JSON mode.
 const JSON_MODES = new Set(['branch', 'planner', 'qgen', 'roadmap', 'college']);
 
-async function callGemini({ systemPrompt, messages, image, jsonMode = false }) {
+async function callGeminiOnce({ systemPrompt, messages, image, jsonMode }) {
   const apiKey = process.env.GEMINI_API_KEY;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
@@ -154,7 +164,6 @@ async function callGemini({ systemPrompt, messages, image, jsonMode = false }) {
     parts: [{ text: m.content }],
   }));
 
-  // Attach image to the last user message for vision mode
   if (image && image.data && contents.length > 0) {
     const last = contents[contents.length - 1];
     last.parts.push({ inlineData: { mimeType: image.mimeType || 'image/jpeg', data: image.data } });
@@ -162,16 +171,11 @@ async function callGemini({ systemPrompt, messages, image, jsonMode = false }) {
 
   const generationConfig = {
     maxOutputTokens: 4096,
-    temperature: jsonMode ? 0.4 : 0.7,   // lower temp for structured output = more reliable
+    temperature: jsonMode ? 0.4 : 0.7,
   };
-  // Gemini's native JSON mode — guarantees the response is valid JSON.
   if (jsonMode) generationConfig.responseMimeType = 'application/json';
 
-  const body = {
-    systemInstruction: { parts: [{ text: systemPrompt }] },
-    contents,
-    generationConfig,
-  };
+  const body = { systemInstruction: { parts: [{ text: systemPrompt }] }, contents, generationConfig };
 
   const resp = await fetch(url, {
     method: 'POST',
@@ -181,11 +185,31 @@ async function callGemini({ systemPrompt, messages, image, jsonMode = false }) {
 
   if (!resp.ok) {
     const errText = await resp.text();
-    throw new Error(`Gemini API ${resp.status}: ${errText}`);
+    const e = new Error(`Gemini ${resp.status}: ${errText.slice(0, 400)}`);
+    e.status = resp.status;
+    throw e;
   }
 
   const data = await resp.json();
-  return data?.candidates?.[0]?.content?.parts?.map(p => p.text).join('\n') || '';
+  // Check for safety-filtered / blocked response
+  const cand = data?.candidates?.[0];
+  if (cand?.finishReason === 'SAFETY') throw new Error('Gemini blocked this response for safety. Rephrase your question.');
+  if (cand?.finishReason === 'RECITATION') throw new Error('Gemini blocked this response (recitation). Rephrase.');
+  const text = cand?.content?.parts?.map(p => p.text).filter(Boolean).join('\n') || '';
+  if (!text) throw new Error('Gemini returned empty output. Try a simpler question.');
+  return text;
+}
+
+// Wrapper with one automatic retry on transient Gemini 5xx / 429 errors.
+async function callGemini(args) {
+  try {
+    return await callGeminiOnce(args);
+  } catch (e) {
+    const transient = e.status >= 500 || e.status === 429;
+    if (!transient) throw e;
+    await new Promise(r => setTimeout(r, 1500));
+    return await callGeminiOnce(args);
+  }
 }
 
 // Express handler — used by backend/server.cjs
@@ -218,7 +242,9 @@ async function chatHandler(req, res) {
     res.json({ reply });
   } catch (err) {
     console.error('Gemini API error:', err.message);
-    res.status(500).json({ error: 'AI service error. Please try again.' });
+    // Surface the real Gemini message to the client so they know what happened.
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message || 'AI service error. Please try again.' });
   }
 }
 
