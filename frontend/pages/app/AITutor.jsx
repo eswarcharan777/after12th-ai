@@ -189,7 +189,7 @@ export default function AITutor() {
       setMessages(next);
       if (autoSpeak) setTimeout(() => speak(reply, next.length - 1), 250);
     } catch (err) {
-      setMessages([...updated, { role: 'assistant', content: `Sorry, I couldn't connect right now. Error: ${err.message}\n\nPlease make sure the backend server is running with your API key set.` }]);
+      setMessages([...updated, { role: 'assistant', content: `😕 ${err.message}` }]);
     } finally {
       setLoading(false);
     }

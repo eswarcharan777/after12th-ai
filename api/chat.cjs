@@ -4,7 +4,10 @@
 //  Used by: AI Tutor, Branch Guide, Study Planner, College Finder
 // ═════════════════════════════════════════════════════════════════
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+// Use the stable Gemini 1.5 Flash by default — 2.5 model IDs change often
+// and can 404. Override via GEMINI_MODEL env var on Render if you want to
+// pin a newer preview model.
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 
 // Persona tweaks applied on top of the tutor system prompt
 const PERSONAS = {
