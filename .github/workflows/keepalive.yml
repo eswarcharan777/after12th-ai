@@ -22,16 +22,23 @@ jobs:
       - name: Ping backend
         run: |
           echo "Pinging Render backend to keep it awake..."
-          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 90 \
-            -X POST https://after12th-ai.onrender.com/api/chat \
-            -H "Content-Type: application/json" \
-            -d '{"mode":"tutor","messages":[{"role":"user","content":"ping"}]}')
+          # Hit the lightweight static-file route first (never invokes Gemini,
+          # so it won't fail just because the AI backend is down). Any HTTP
+          # response at all means Render is serving traffic = dyno awake.
+          RESPONSE=$(curl -s -o /tmp/body -w "%{http_code}" \
+            --max-time 60 \
+            https://after12th-ai.onrender.com/ || echo "000")
           echo "HTTP status: $RESPONSE"
-          # Any 2xx/3xx counts as awake. 401/403/429 also mean the server is up.
-          if [[ "$RESPONSE" =~ ^(2|3|4)[0-9][0-9]$ ]]; then
-            echo "✅ Backend is awake."
-          else
-            echo "⚠️  Unexpected response — backend may be down."
+          head -c 300 /tmp/body 2>/dev/null || true
+          echo ""
+          if [[ "$RESPONSE" == "000" ]]; then
+            echo "❌ Backend is completely unreachable (network / suspended)."
             exit 1
+          fi
+          # Any real HTTP response — even 500 — means the server is alive.
+          # Warn on 5xx but don't fail the workflow.
+          if [[ "$RESPONSE" =~ ^5 ]]; then
+            echo "⚠️  Backend responded with $RESPONSE — dyno is awake but service is erroring."
+          else
+            echo "✅ Backend is awake ($RESPONSE)."
           fi
