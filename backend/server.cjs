@@ -20,6 +20,10 @@ const { chatHandler, GEMINI_MODEL } = require('../api/chat.cjs');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Render sits behind a proxy — tell Express to trust it so rate-limit
+// can correctly read the client IP from X-Forwarded-For without warnings.
+app.set('trust proxy', 1);
+
 // ── Middleware ───────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
